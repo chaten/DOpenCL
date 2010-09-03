@@ -1,6 +1,5 @@
 DC = dmd
 DCFLAGS =
-#Output flag is different between dmd and gdc
 INSTALL_PATH = /usr
 LIBNAME = DOpenCL
 TARGET = lib/lib$(LIBNAME).a
