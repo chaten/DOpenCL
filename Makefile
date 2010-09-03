@@ -7,6 +7,7 @@ SRC = $(wildcard $(LIBNAME)/*.d)
 TST_SRC = $(wildcard test/*.d)
 OBJ = $(addsuffix .o,$(basename $(SRC)))
 TST_OBJ = $(addsuffix .o,$(basename $(TST_SRC)))
+.PHONY: clean uninstall
 all: $(TARGET)
 install: $(TARGET)
 	@cp -r include $(INSTALL_PATH)/include/d/$(LIBNAME)

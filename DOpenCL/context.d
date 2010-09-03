@@ -56,5 +56,5 @@ struct Context {
     delete cl_device_ids;
     return device_ids;
   }
-
+  /* TODO: context properties */
 }
