@@ -14,13 +14,11 @@
   limitations under the License.
 */
 import DOpenCL.raw;
-import DOpenCL.program;
-import DOpenCL.command_queue;
 import std.string;
 struct Kernel { 
   cl_kernel _kernel;
   alias _kernel this;
-  this(Program program,string name) {
+  this(cl_program program,string name) {
     cl_int err_code;
     _kernel = clCreateKernel(program,toStringz(name),&err_code);
     assert(err_code == CL_SUCCESS);
@@ -33,10 +31,6 @@ struct Kernel {
   }
   void set_kernel_arg(cl_uint arg_index,size_t size,const(void) * ptr) {
     auto err_code = clSetKernelArg(this,arg_index,size,ptr);
-    assert(err_code == CL_SUCCESS);
-  }
-  void enqueue_nd_range(CommandQueue cmd_queue,cl_uint work_dim,in size_t work_size[],in size_t local_work_size[]) {
-    auto err_code = clEnqueueNDRangeKernel(cmd_queue,this,work_dim,null,work_size.ptr,local_work_size.ptr,0,null,null);
     assert(err_code == CL_SUCCESS);
   }
 }

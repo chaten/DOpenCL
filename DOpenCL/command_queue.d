@@ -29,4 +29,15 @@ struct CommandQueue {
     auto err_code = clReleaseCommandQueue(this);
     assert(err_code == CL_SUCCESS);
   }
+  void enqueue_nd_range_kernel(cl_kernel kernel,cl_uint work_dim,int size_t work_size[], in size_t local_work_size[]) {
+    auto err_code = clEnqueueNDRangeKernel(this,kernel,work_dim,null,
+    					work_size.ptr,local_work_size.ptr,
+					0,null,null);
+    assert(err_code == CL_SUCCESS);
+  }
+  void enqueue_task(cl_kernel kernel) {
+    auto err_code = clEnqueueTask(this,kernel,0,null,null);
+    assert(err_code == CL_SUCCESS);
+  }
+  //TODO: Native Kernel
 }
