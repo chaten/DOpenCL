@@ -481,14 +481,14 @@ extern(System) {
 							size_t * ); 
 	cl_program clCreateProgramWithSource(cl_context,
 							cl_uint ,
-							char ** ,
+							const(char) ** ,
 							size_t *,
 							cl_int *);
 	cl_program clCreateProgramWithBinary(cl_context ,
 							cl_uint,
 							cl_device_id * ,
 							size_t * ,
-							char ** ,
+							const(char) ** ,
 							cl_int * ,
 							cl_int * );
 	cl_int clRetainProgram(cl_program );
@@ -496,7 +496,7 @@ extern(System) {
 	cl_int clBuildProgram(cl_program ,
 						 cl_uint ,
 						cl_device_id * ,
-						char * ,
+						const(char) * ,
 						void function(cl_program,void *),
 					void * ); 
 	cl_int clUnloadCompiler();
@@ -511,7 +511,7 @@ extern(System) {
 						void *,
 						size_t *); 
 	cl_kernel clCreateKernel(cl_program,
-						char *,
+						const(char) *,
 						cl_int *);
 	cl_int clCreateKernelsInProgram(cl_program ,
 						cl_uint,
@@ -522,7 +522,7 @@ extern(System) {
 	cl_int clSetKernelArg(cl_kernel,
 					cl_uint,
 						size_t ,
-						void * );
+						const(void) * );
 	cl_int clGetKernelInfo(cl_kernel ,
 						cl_kernel_info,
 						size_t,
@@ -657,9 +657,9 @@ extern(System) {
 		 cl_int clEnqueueNDRangeKernel(cl_command_queue ,
 							 cl_kernel,
 							 cl_uint,
-								size_t * ,
-								size_t * ,
-								size_t * ,
+						         const(size_t) * ,
+							 const(size_t) * ,
+							 const(size_t) * ,
 							 cl_uint,
 								cl_event * ,
 							 cl_event * );
