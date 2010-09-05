@@ -18,9 +18,10 @@ import DOpenCL.context;
 import DOpenCL.command_queue;
 struct Buffer {
   cl_mem mem;
-  this(Context context,cl_mem_flags flags,size_t size,void * host_ptr) {
+  alias mem this;
+  this(cl_context context,cl_mem_flags flags,size_t size,void * host_ptr) {
     cl_int err_code;
-    mem = clCreateBuffer(context.context,flags,size,host_ptr,&err_code);
+    mem = clCreateBuffer(context,flags,size,host_ptr,&err_code);
     assert (err_code == CL_SUCCESS);
   }
   this(cl_mem my_mem) {
@@ -29,13 +30,13 @@ struct Buffer {
   ~this() {
     clReleaseMemObject(mem);
   }
-  void enqueue_read_buffer(CommandQueue cmd_queue,bool blocking_read,
+  void enqueue_read(cl_command_queue cmd_queue,bool blocking_read,
   					size_t offset,size_t cb,void * ptr) {
-    auto err_code = clEnqueueReadBuffer(cmd_queue.queue,mem,blocking_read,offset,cb,ptr,0,null,null);
+    auto err_code = clEnqueueReadBuffer(cmd_queue,this,blocking_read,offset,cb,ptr,0,null,null);
     assert(err_code == CL_SUCCESS);
   }
-  void enqueue_write_buffer(CommandQueue cmd_queue,bool blocking_write,size_t offset,size_t cb,void * ptr) {
-    auto err_code = clEnqueueWriteBuffer(cmd_queue.queue,mem,blocking_write,offset,cb,ptr,0,null,null);
+  void enqueue_write(cl_command_queue cmd_queue,bool blocking_write,size_t offset,size_t cb,void * ptr) {
+    auto err_code = clEnqueueWriteBuffer(cmd_queue,this,blocking_write,offset,cb,ptr,0,null,null);
     assert(err_code == CL_SUCCESS);
   }
 }
