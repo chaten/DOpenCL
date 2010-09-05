@@ -17,19 +17,18 @@ import DOpenCL.raw;
 import DOpenCL.device_id;
 import DOpenCL.context;
 struct CommandQueue {
-  cl_command_queue queue;
-  this(cl_command_queue my_queue) {
-    queue = my_queue;
+  cl_command_queue _queue;
+  alias _queue this;
+  this(cl_command_queue queue) {
+    _queue = queue;
   }
   this(Context context,DeviceID device_id,cl_command_queue_properties properties) {
     cl_int err_code;
-    queue = clCreateCommandQueue(context.context,device_id.device_id,properties,&err_code);
+    _queue = clCreateCommandQueue(context.context,device_id.device_id,properties,&err_code);
     assert(err_code == CL_SUCCESS);
   }
   ~this() {
-    auto err_code = clReleaseCommandQueue(queue);
+    auto err_code = clReleaseCommandQueue(this);
     assert(err_code == CL_SUCCESS);
   }
-
-
 }

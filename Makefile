@@ -16,7 +16,7 @@ uninstall:
 	@rm $(INSTALL_PATH)/$(TARGET)
 	@rm -r $(INSTALL_PATH)/include/d/$(LIBNAME)
 clean:
-	@rm -rf $(OBJ) $(TARGET) lib include $(TST_OBJ)
+	@rm -rf $(OBJ) $(TARGET) lib include $(TST_OBJ) build
 test: DCFLAGS = -unittest 
 test: $(OBJ) $(TST_OBJ)
 	$(DC) $^ -ofbuild/test -L-lOpenCL

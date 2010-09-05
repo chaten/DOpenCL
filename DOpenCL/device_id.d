@@ -16,9 +16,10 @@
 
 import DOpenCL.raw;
 struct DeviceID {
-  cl_device_id device_id;
+  cl_device_id _device_id;
+  alias _device_id this;
   this(cl_device_id my_device_id) {
-    device_id = my_device_id;
+    _device_id = my_device_id;
   }
   /* TODO: Implement get device info */
 }

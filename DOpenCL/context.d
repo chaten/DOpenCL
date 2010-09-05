@@ -17,35 +17,35 @@
 import DOpenCL.raw;
 import DOpenCL.device_id;
 struct Context {
-  cl_context context;
-  
+  cl_context _context;
+  alias _context this;
   this(cl_context_properties properties[],cl_device_type device_type) {
     cl_int err_code;
-    context = clCreateContextFromType(properties.ptr,device_type,null,null,
+    _context = clCreateContextFromType(properties.ptr,device_type,null,null,
     		&err_code);
     assert(err_code == CL_SUCCESS);
   }
   this(cl_context_properties properties[],cl_device_id devices[]) {
     cl_int err_code;
-    context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
+    _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
     assert(err_code == CL_SUCCESS);
   }
   this(cl_context my_context) {
-    context = my_context;
+    _context = my_context;
   }
   ~this() {
-    clReleaseContext(context);
+    clReleaseContext(this);
   }
   cl_uint num_devices() {
     cl_uint ret;
-    cl_int err = clGetContextInfo(context,CL_CONTEXT_NUM_DEVICES,ret.sizeof,&ret,null);
+    cl_int err = clGetContextInfo(this,CL_CONTEXT_NUM_DEVICES,ret.sizeof,&ret,null);
     assert(err == CL_SUCCESS);
     return ret;
   }
   DeviceID[] device_ids() {
     cl_uint devices_len = num_devices();
     cl_device_id cl_device_ids[] = new cl_device_id[devices_len];
-    cl_int err = clGetContextInfo(context,CL_CONTEXT_DEVICES,
+    cl_int err = clGetContextInfo(this,CL_CONTEXT_DEVICES,
 		     cl_device_ids.length * cl_device_id.sizeof,
 		     cl_device_ids.ptr,null);
     assert(err == CL_SUCCESS);
