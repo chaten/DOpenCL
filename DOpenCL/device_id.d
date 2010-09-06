@@ -40,106 +40,150 @@ struct DeviceID {
     }
   }
   cl_uint address_bits() {
-    cl_uint ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_ADDRESS_BITS,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret;
+    return device_scalar_info!(cl_uint)(CL_DEVICE_ADDRESS_BITS);
   }
   bool available() {
-    cl_bool ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_AVAILABLE,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret == CL_TRUE;
+    return device_scalar_info!(cl_bool)(CL_DEVICE_AVAILABLE) == CL_TRUE;
   }
   bool compiler_available() {
-    cl_bool ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_COMPILER_AVAILABLE,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret == CL_TRUE;
-  }/*
+    return device_scalar_info!(cl_bool)(CL_DEVICE_COMPILER_AVAILABLE) == CL_TRUE;
+  }
   cl_device_fp_config double_fp_config() {
-    cl_device_fp_config ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_DOUBLE_FP_CONFIG,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret;
-  }*/
+    return device_scalar_info!(cl_device_fp_config)(CL_DEVICE_DOUBLE_FP_CONFIG);
+  }
   bool is_little_endian() {
-    cl_bool ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_ENDIAN_LITTLE,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret == CL_TRUE;
+    return device_scalar_info!(cl_bool)(CL_DEVICE_ENDIAN_LITTLE) == CL_TRUE;
   }
   bool has_ecc() {
-    cl_bool ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_ERROR_CORRECTION_SUPPORT,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret == CL_TRUE;
+    return device_scalar_info!(cl_bool)(CL_DEVICE_ERROR_CORRECTION_SUPPORT) == CL_TRUE;
   }
   cl_device_exec_capabilities execution_capabilities() {
-    cl_device_exec_capabilities ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_EXECUTION_CAPABILITIES,ret.sizeof,&ret,null);
-    assert(CL_SUCCESS == err_code);
-    return ret;
+    return device_scalar_info!(cl_device_exec_capabilities)(CL_DEVICE_EXECUTION_CAPABILITIES);
   }
   string extensions() {
-    char [] extensions;
-    size_t extensions_len;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_EXTENSIONS,extensions.sizeof,null,&extensions_len);
-    assert(CL_SUCCESS == err_code);
-    extensions = new char[extensions_len];
-    err_code = clGetDeviceInfo(this,CL_DEVICE_EXTENSIONS,char.sizeof*extensions_len,extensions.ptr,null);
-    assert(CL_SUCCESS == err_code);
-    return cast(immutable)extensions;
+    return cast(immutable)device_array_info!(char)(CL_DEVICE_EXTENSIONS);
   }
   cl_ulong global_mem_cache_size() {
-    cl_ulong ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_GLOBAL_MEM_CACHE_SIZE,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
+    return device_scalar_info!(cl_ulong)(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE);
   }
   cl_device_mem_cache_type global_mem_cache_type() {
-    cl_device_mem_cache_type type;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_GLOBAL_MEM_CACHE_TYPE,type.sizeof,&type,null);
-    assert(err_code == CL_SUCCESS);
-    return type;
+    return device_scalar_info!(cl_device_mem_cache_type)(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE);
   }
   cl_uint global_mem_cacheline_size() {
-    cl_uint ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
+    return device_scalar_info!(cl_uint)(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE);
   }
   cl_ulong global_mem_size() {
-    cl_ulong ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_GLOBAL_MEM_SIZE,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
+    return device_scalar_info!(cl_ulong)(CL_DEVICE_GLOBAL_MEM_SIZE);
   }
- /* cl_device_fp_config half_fp_config() {
-    cl_device_fp_config ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_HALF_FP_CONFIG,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
-  } */
+  cl_device_fp_config half_fp_config() {
+    return device_scalar_info!(cl_device_fp_config)(CL_DEVICE_HALF_FP_CONFIG);
+  } 
   bool has_image_support() {
-    cl_bool ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_IMAGE_SUPPORT,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret == CL_TRUE;
+    return device_scalar_info!(cl_bool)(CL_DEVICE_IMAGE_SUPPORT) == CL_TRUE;
   }
-  //TODO: Image height,width,ect
+  size_t image2d_max_height() {
+    return device_scalar_info!(size_t)(CL_DEVICE_IMAGE2D_MAX_HEIGHT);
+  }
+  size_t image2d_max_width() {
+    return device_scalar_info!(size_t)(CL_DEVICE_IMAGE2D_MAX_WIDTH);
+  }
+  size_t image3d_max_depth() {
+    return device_scalar_info!(size_t)(CL_DEVICE_IMAGE3D_MAX_DEPTH);
+  }
+  size_t image3d_max_height() {
+    return device_scalar_info!(size_t)(CL_DEVICE_IMAGE3D_MAX_HEIGHT);
+  }
+  size_t image3d_max_width() {
+    return device_scalar_info!(size_t)(CL_DEVICE_IMAGE3D_MAX_WIDTH);
+  }
   cl_ulong local_mem_size() {
-    cl_ulong ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_LOCAL_MEM_SIZE,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
+    return device_scalar_info!(cl_ulong)(CL_DEVICE_LOCAL_MEM_SIZE);
   }
   cl_device_local_mem_type local_mem_type() {
-    cl_device_local_mem_type ret;
-    auto err_code = clGetDeviceInfo(this,CL_DEVICE_LOCAL_MEM_TYPE,ret.sizeof,&ret,null);
-    assert(err_code == CL_SUCCESS);
-    return ret;
+    return device_scalar_info!(cl_device_local_mem_type)(CL_DEVICE_LOCAL_MEM_TYPE);
   }
-
-  /* TODO: Implement get device info */
+  cl_uint max_clock_frequency() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_CLOCK_FREQUENCY);
+  }
+  cl_uint max_compute_units() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_COMPUTE_UNITS);
+  }
+  cl_uint max_constant_args() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_CONSTANT_ARGS);
+  }
+  cl_ulong max_constant_buffer_size() {
+    return device_scalar_info!(cl_ulong)(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE);
+  }
+  cl_ulong max_mem_alloc_size() {
+    return device_scalar_info!(cl_ulong)(CL_DEVICE_MAX_MEM_ALLOC_SIZE);
+  }
+  size_t max_parameter_size() {
+    return device_scalar_info!(size_t)(CL_DEVICE_MAX_PARAMETER_SIZE);
+  }
+  cl_uint max_read_image_args() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_READ_IMAGE_ARGS);
+  }
+  cl_uint max_samplers() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_SAMPLERS);
+  }
+  size_t[] max_work_item_sizes() {
+    return device_array_info!(size_t)(CL_DEVICE_MAX_WORK_ITEM_SIZES);
+  }
+  cl_uint max_write_image_args() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MAX_WRITE_IMAGE_ARGS);
+  }
+  cl_uint mem_base_addr_align() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MEM_BASE_ADDR_ALIGN);
+  }
+  cl_uint min_data_type_align_size() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE);
+  }
+  string name() {
+    return cast(immutable)device_array_info!(char)(CL_DEVICE_NAME);
+  }
+  cl_uint preferred_vector_width_char() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR);
+  }
+  cl_uint preferred_vector_width_short() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT);
+  }
+  cl_uint preferred_vector_width_int() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT);
+  }
+  cl_uint preferred_vector_width_long() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG);
+  }
+  cl_uint preferred_vector_width_float() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT);
+  }
+  cl_uint preferred_vector_width_double() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE);
+  }
+  string profile() {
+    return cast(immutable)device_array_info!(char)(CL_DEVICE_PROFILE);
+  }
+  size_t profiling_timer_resolution() {
+    return device_scalar_info!(size_t)(CL_DEVICE_PROFILING_TIMER_RESOLUTION);
+  }
+  cl_command_queue_properties queue_properties() {
+    return device_scalar_info!(cl_command_queue_properties)(CL_DEVICE_QUEUE_PROPERTIES);
+  }
+  cl_device_fp_config single_fp_config() {
+    return device_scalar_info!(cl_device_fp_config)(CL_DEVICE_SINGLE_FP_CONFIG);
+  }
+  cl_device_type type() {
+    return device_scalar_info!(cl_device_type)(CL_DEVICE_TYPE);
+  }
+  string vendor() {
+    return cast(immutable)device_array_info!(char)(CL_DEVICE_VENDOR);
+  }
+  cl_uint vendor_id() {
+    return device_scalar_info!(cl_uint)(CL_DEVICE_VENDOR_ID);
+  }
+  string cl_version() {
+    return cast(immutable)device_array_info!(char)(CL_DEVICE_VERSION);
+  }
+  string driver_version() {
+    return cast(immutable)device_array_info!(char)(CL_DRIVER_VERSION);
+  }
 }
