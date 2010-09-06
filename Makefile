@@ -5,9 +5,9 @@ LIBNAME = DOpenCL
 TARGET = lib/lib$(LIBNAME).a
 SRC = $(wildcard $(LIBNAME)/*.d)
 TST_SRC = $(wildcard test/*.d)
-OBJ = $(addsuffix .o,$(basename $(SRC)))
-TST_OBJ = $(addsuffix .o,$(basename $(TST_SRC)))
-.PHONY: clean uninstall
+OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
+TST_OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(TST_SRC))))
+.PHONY: clean uninstall all install test
 all: $(TARGET)
 install: $(TARGET)
 	@cp -r include $(INSTALL_PATH)/include/d/$(LIBNAME)
@@ -16,11 +16,11 @@ uninstall:
 	@rm $(INSTALL_PATH)/$(TARGET)
 	@rm -r $(INSTALL_PATH)/include/d/$(LIBNAME)
 clean:
-	@rm -rf $(OBJ) $(TARGET) lib include $(TST_OBJ) build
+	@rm -rf $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin
 test: DCFLAGS = -unittest 
 test: $(OBJ) $(TST_OBJ)
-	$(DC) $^ -ofbuild/test -L-lOpenCL
+	$(DC) $^ -ofbin/test -L-lOpenCL
 $(TARGET): $(OBJ)
 	$(DC) -lib $^ -of$@
-%.o: %.d
+build/%.o: %.d
 	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
