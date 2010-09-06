@@ -145,8 +145,8 @@ extern(System) {
 		CL_DEVICE_VERSION                          =0x102F,
 		CL_DEVICE_EXTENSIONS                       =0x1030,
 		CL_DEVICE_PLATFORM                         =0x1031,
-		/* 0x1032 reserved for CL_DEVICE_DOUBLE_FP_CONFIG */
-		/* 0x1033 reserved for CL_DEVICE_HALF_FP_CONFIG */
+		CL_DEVICE_DOUBLE_FP_CONFIG		   =0x1032,
+		CL_DEVICE_HALF_FP_CONFIG		   =0x1033,
 		CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF      =0x1034,
 		CL_DEVICE_HOST_UNIFIED_MEMORY              =0x1035,
 		CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR         =0x1036,
