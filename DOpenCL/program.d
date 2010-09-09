@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.                                  
 */
+module DOpenCL.program;
 import DOpenCL.raw;
 import std.string;
 import DOpenCL.device_id;

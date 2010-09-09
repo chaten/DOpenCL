@@ -1,5 +1,5 @@
 DC = dmd
-DCFLAGS =
+DCFLAGS = 
 INSTALL_PATH = /usr
 LIBNAME = DOpenCL
 TARGET = lib/lib$(LIBNAME).a

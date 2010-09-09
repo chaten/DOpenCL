@@ -13,6 +13,7 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+module DOpenCL.buffer;
 import DOpenCL.raw;
 import DOpenCL.context;
 import DOpenCL.command_queue;

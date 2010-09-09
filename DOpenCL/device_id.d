@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
-
+module DOpenCL.device_id;
 import DOpenCL.raw;
 struct DeviceID {
   cl_device_id _device_id;

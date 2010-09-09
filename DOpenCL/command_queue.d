@@ -13,6 +13,7 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+module DOpenCL.command_queue;
 import DOpenCL.raw;
 struct CommandQueue {
   cl_command_queue _queue;
