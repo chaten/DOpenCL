@@ -15,13 +15,26 @@
 */
 module DOpenCL.command_queue;
 import DOpenCL.raw;
+import DOpenCL.buffer;
+import DOpenCL.kernel;
+import DOpenCL.context;
+import DOpenCL.device_id;
+/***
+  Represents an OpenCL Command Queue.
+ */
 struct CommandQueue {
   cl_command_queue _queue;
   alias _queue this;
+  /***
+   * Create this from an existing command queue
+   */
   this(cl_command_queue queue) {
     _queue = queue;
   }
-  this(cl_context context,cl_device_id device_id,cl_command_queue_properties properties) {
+  /***
+   * Create a Command Queue. 
+   */
+  this(Context context,DeviceID device_id,cl_command_queue_properties properties) {
     cl_int err_code;
     _queue = clCreateCommandQueue(context,device_id,properties,&err_code);
     assert(err_code == CL_SUCCESS);
@@ -30,15 +43,30 @@ struct CommandQueue {
     auto err_code = clReleaseCommandQueue(this);
     assert(err_code == CL_SUCCESS);
   }
-  void enqueue_nd_range_kernel(cl_kernel kernel,cl_uint work_dim,in size_t work_size[], in size_t local_work_size[]) {
+  /****/
+  void enqueue_nd_range_kernel(Kernel kernel,cl_uint work_dim,in size_t work_size[], in size_t local_work_size[]) {
     auto err_code = clEnqueueNDRangeKernel(this,kernel,work_dim,null,
     					work_size.ptr,local_work_size.ptr,
 					0,null,null);
     assert(err_code == CL_SUCCESS);
   }
-  void enqueue_task(cl_kernel kernel) {
+  void enqueue_task(Kernel kernel) {
     auto err_code = clEnqueueTask(this,kernel,0,null,null);
     assert(err_code == CL_SUCCESS);
   }
   //TODO: Native Kernel
+  /***
+   *  Read data from the buffer into the array
+   */
+  void enqueue_read_buffer(Buffer buffer,bool blocking,out void [] data) {
+    auto err_code = clEnqueueReadBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
+    assert(err_code == CL_SUCCESS);
+  }
+  /***
+   * Write data into the buffer from the array
+   */
+  void enqueue_write_buffer(Buffer buffer,bool blocking,in void [] data) {
+    auto err_code = clEnqueueWriteBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
+    assert(err_code == CL_SUCCESS);
+  }
 }

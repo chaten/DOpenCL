@@ -13,13 +13,22 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+/***
+ * License: Apache 2.0
+ */
 module DOpenCL.platform_id;
 import DOpenCL.raw;
 import DOpenCL.device_id;
 import std.algorithm;
+/***
+ * Represents the ID of an OpenCL Platform
+ * The default way to obtain a platform object is to use
+ * get_all_platform_ids()
+ */
 struct PlatformID {
   cl_platform_id _id;
   alias _id this;
+  ///
   this(cl_platform_id id) {
     _id = id;
   }
@@ -50,40 +59,51 @@ struct PlatformID {
       return device_ids;
     }
   }
+  ///
   string name() {
     return get_str_info(CL_PLATFORM_NAME);
   }
+  ///
   string extensions() {
     return get_str_info(CL_PLATFORM_EXTENSIONS);
   }
+  ///
   string my_version() {
     return get_str_info(CL_PLATFORM_VERSION);
   }
+  ///
   string vendor() {
     return get_str_info(CL_PLATFORM_VENDOR);
   }
+  ///
   string profile() {
     return get_str_info(CL_PLATFORM_PROFILE);
   }
+  ///
   DeviceID [] all_devices() {
     return get_devices(CL_DEVICE_TYPE_ALL);
   }
+  ///
   DeviceID [] gpu_devices() {
     return get_devices(CL_DEVICE_TYPE_GPU);
   }
+  ///
   DeviceID [] cpu_devices() {
     return get_devices(CL_DEVICE_TYPE_CPU);
   }
+  ///
   DeviceID [] accelerator_devices() {
     return get_devices(CL_DEVICE_TYPE_DEFAULT);
   }
 }
+/// Get all of the platforms available on this system
 PlatformID[] get_all_platform_ids() {
   cl_uint num_platforms;
   auto err_code = clGetPlatformIDs(0,null,&num_platforms);
   assert(err_code == CL_SUCCESS);
   return get_platform_ids(num_platforms);
 }
+/// Get N platforms available on this system
 PlatformID[] get_platform_ids(cl_uint num_platforms) {
   cl_platform_id cl_ids[] = new cl_platform_id[num_platforms];
   auto err_code = clGetPlatformIDs(num_platforms,cl_ids.ptr,&num_platforms);

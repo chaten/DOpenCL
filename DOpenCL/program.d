@@ -13,15 +13,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.                                  
 */
+/***
+ * License: Apache 2.0
+ */
 module DOpenCL.program;
 import DOpenCL.raw;
+import DOpenCL.context;
 import std.string;
 import DOpenCL.device_id;
+/***
+ * Represents an OpenCL Program Object
+ */
 struct Program {
   cl_program _program;
   alias _program this;
-
-  this(cl_context context,in string[] strings) {
+  /***
+   * Create a program with the given source strings
+   */
+  this(Context context,in string[] strings) {
     cl_int err_code;
     const(char)* c_strings[] = new const(char)*[strings.length];
     size_t lengths[] = new size_t[strings.length];
@@ -35,17 +44,20 @@ struct Program {
     delete c_strings;
     delete lengths;
   }
+  ///
   this(cl_program program) {
     _program = program;
   }
   ~this() {
     clReleaseProgram(this);
   }
+
   void build_program(ref cl_device_id device_list[],in string options) { 
     auto err_code = clBuildProgram(this,device_list.length,
     			device_list.ptr,toStringz(options),null,null);
     assert(err_code == CL_SUCCESS);
   }
+  ///
   void build_program(ref DeviceID device_list[],in string options) {
     cl_device_id device_id_list[] = new cl_device_id[device_list.length];
     foreach(i,id;device_list) {
@@ -53,12 +65,14 @@ struct Program {
     }
     build_program(device_id_list,options);
   }
+  ///
   cl_uint num_devices() {
     cl_uint ret;
     auto err_code = clGetProgramInfo(this,CL_PROGRAM_NUM_DEVICES,ret.sizeof,&ret,null);
     assert(err_code == CL_SUCCESS);
     return ret;
   }
+  ////
   DeviceID[] devices() {
     cl_device_id * device_ids;
     size_t device_ids_len;
@@ -69,6 +83,7 @@ struct Program {
     }
     return ret;
   }
+  ///
   string source() {
     char * src;
     size_t src_len;
@@ -80,6 +95,7 @@ struct Program {
     }
     return cast(immutable)ret;
   }
+  ///
   string build_log(DeviceID device) {
     char * log;
     size_t log_len;
@@ -91,6 +107,7 @@ struct Program {
     }
     return cast(immutable)ret;
   }
+  ///
   cl_build_status build_status(DeviceID device) {
     cl_build_status status;
     auto err_code = clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_STATUS,
@@ -98,6 +115,7 @@ struct Program {
     assert(err_code == CL_SUCCESS);
     return status;
   }
+  ///
   string build_options(DeviceID device) {
     char * options;
     size_t options_len;
