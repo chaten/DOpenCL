@@ -13,31 +13,29 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+/***
+ * License: Apache 2.0
+ */
 module DOpenCL.buffer;
 import DOpenCL.raw;
 import DOpenCL.context;
 import DOpenCL.command_queue;
+/*** A buffer reperesents memory stored on the opencl device */
 struct Buffer {
-  cl_mem mem;
-  alias mem this;
-  this(cl_context context,cl_mem_flags flags,size_t size,void * host_ptr) {
+  cl_mem _mem; ///The opencl memory structure buffer is based on
+  alias _mem this;
+  /***
+   * Create a buffer with the given flags and from the given data.
+   */
+  this(Context context,cl_mem_flags flags,void [] host_ptr) {
     cl_int err_code;
-    mem = clCreateBuffer(context,flags,size,host_ptr,&err_code);
+    _mem = clCreateBuffer(context,flags,host_ptr.length,host_ptr.ptr,&err_code);
     assert (err_code == CL_SUCCESS);
   }
-  this(cl_mem my_mem) {
-    mem = my_mem;
+  this(cl_mem mem) {
+    _mem = mem;
   }
   ~this() {
-    clReleaseMemObject(mem);
-  }
-  void enqueue_read(cl_command_queue cmd_queue,bool blocking_read,
-  					size_t offset,size_t cb,void * ptr) {
-    auto err_code = clEnqueueReadBuffer(cmd_queue,this,blocking_read,offset,cb,ptr,0,null,null);
-    assert(err_code == CL_SUCCESS);
-  }
-  void enqueue_write(cl_command_queue cmd_queue,bool blocking_write,size_t offset,size_t cb,void * ptr) {
-    auto err_code = clEnqueueWriteBuffer(cmd_queue,this,blocking_write,offset,cb,ptr,0,null,null);
-    assert(err_code == CL_SUCCESS);
+    clReleaseMemObject(this);
   }
 }

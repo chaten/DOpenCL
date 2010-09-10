@@ -13,35 +13,54 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+/***
+ * License: Apache 2.0
+ */
 module DOpenCL.context;
 import DOpenCL.raw;
 import DOpenCL.device_id;
+/***
+  Represents an OpenCL context
+ */
 struct Context {
   cl_context _context;
   alias _context this;
-  this(cl_context_properties properties[],cl_device_type device_type) {
+  /***
+  */
+  this(ref cl_context_properties properties[],cl_device_type device_type) {
     cl_int err_code;
     _context = clCreateContextFromType(properties.ptr,device_type,null,null,
     		&err_code);
     assert(err_code == CL_SUCCESS);
   }
-  this(cl_context_properties properties[],cl_device_id devices[]) {
+  /***
+  */
+  this(ref cl_context_properties properties[],in cl_device_id devices[]) {
     cl_int err_code;
     _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
     assert(err_code == CL_SUCCESS);
   }
+  /***
+   * Create me from an exist OpenCL context
+   */
   this(cl_context my_context) {
     _context = my_context;
   }
   ~this() {
     clReleaseContext(this);
   }
+  /***
+   * Get the number of devices that this context has
+   */
   cl_uint num_devices() {
     cl_uint ret;
     cl_int err = clGetContextInfo(this,CL_CONTEXT_NUM_DEVICES,ret.sizeof,&ret,null);
     assert(err == CL_SUCCESS);
     return ret;
   }
+  /***
+   * Get all of the devices this context has
+   */
   DeviceID[] device_ids() {
     cl_uint devices_len = num_devices();
     cl_device_id cl_device_ids[] = new cl_device_id[devices_len];
