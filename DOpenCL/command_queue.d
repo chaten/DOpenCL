@@ -13,6 +13,9 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
+/***
+ * License: Apache 2.0
+ */
 module DOpenCL.command_queue;
 import DOpenCL.raw;
 import DOpenCL.buffer;
@@ -50,6 +53,7 @@ struct CommandQueue {
 					0,null,null);
     assert(err_code == CL_SUCCESS);
   }
+  ///
   void enqueue_task(Kernel kernel) {
     auto err_code = clEnqueueTask(this,kernel,0,null,null);
     assert(err_code == CL_SUCCESS);
