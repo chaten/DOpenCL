@@ -16,9 +16,9 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.platform_id;
-import DOpenCL.raw;
-import DOpenCL.device_id;
+module opencl.platform_id;
+import opencl.c;
+import opencl.device_id;
 import std.algorithm;
 /***
  * Represents the ID of an OpenCL Platform

@@ -1,8 +1,8 @@
 DC = dmd
 DCFLAGS = 
 INSTALL_PATH = /usr
-LIBNAME = DOpenCL
-TARGET = lib/lib$(LIBNAME).a
+LIBNAME = opencl
+TARGET = lib/lib$(LIBNAME)_d.a
 SRC = $(wildcard $(LIBNAME)/*.d)
 TST_SRC = $(wildcard test/*.d)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))

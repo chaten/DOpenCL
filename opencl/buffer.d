@@ -16,10 +16,10 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.buffer;
-import DOpenCL.raw;
-import DOpenCL.context;
-import DOpenCL.command_queue;
+module opencl.buffer;
+import opencl.c;
+import opencl.context;
+import opencl.command_queue;
 /*** A buffer reperesents memory stored on the opencl device */
 struct Buffer {
   cl_mem _mem; ///The opencl memory structure buffer is based on
@@ -32,6 +32,9 @@ struct Buffer {
     _mem = clCreateBuffer(context,flags,host_ptr.length,host_ptr.ptr,&err_code);
     assert (err_code == CL_SUCCESS);
   }
+  /***
+   * Create a buffer from an existing opencl buffer
+   */
   this(cl_mem mem) {
     _mem = mem;
   }

@@ -16,9 +16,9 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.context;
-import DOpenCL.raw;
-import DOpenCL.device_id;
+module opencl.context;
+import opencl.c;
+import opencl.device_id;
 /***
   Represents an OpenCL context
  */

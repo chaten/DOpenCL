@@ -16,11 +16,11 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.program;
-import DOpenCL.raw;
-import DOpenCL.context;
+module opencl.program;
+import opencl.c;
+import opencl.context;
 import std.string;
-import DOpenCL.device_id;
+import opencl.device_id;
 /***
  * Represents an OpenCL Program Object
  */

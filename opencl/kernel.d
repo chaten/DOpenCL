@@ -16,14 +16,14 @@
 /***
  License: Apache 2.0
  */
-module DOpenCL.kernel;
-import DOpenCL.raw;
+module opencl.kernel;
+import opencl.c;
 import std.string;
-import DOpenCL.program;
+import opencl.program;
 /***
  * Represents an OpenCL Kernel 
  *
- * To execute a kernel, see DOpenCL.command_queue
+ * To execute a kernel, see opencl.command_queue
  */
 struct Kernel { 
   cl_kernel _kernel;

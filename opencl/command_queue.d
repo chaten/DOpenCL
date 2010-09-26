@@ -16,12 +16,12 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.command_queue;
-import DOpenCL.raw;
-import DOpenCL.buffer;
-import DOpenCL.kernel;
-import DOpenCL.context;
-import DOpenCL.device_id;
+module opencl.command_queue;
+import opencl.c;
+import opencl.buffer;
+import opencl.kernel;
+import opencl.context;
+import opencl.device_id;
 /***
   Represents an OpenCL Command Queue.
  */

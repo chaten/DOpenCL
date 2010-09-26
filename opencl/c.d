@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and 
   limitations under the License.
 */
-module DOpenCL.raw;///
+module opencl.c;///
 unittest {
 	uint num_entries = 10;///
 	cl_platform_id entries[] = new cl_platform_id[num_entries];///

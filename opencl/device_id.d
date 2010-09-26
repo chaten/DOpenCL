@@ -16,8 +16,8 @@
 /***
  * License: Apache 2.0
  */
-module DOpenCL.device_id;
-import DOpenCL.raw;
+module opencl.device_id;
+import opencl.c;
 /***
  * Represents the ID of an OpenCL device. The standard way to obtain these is from PlatformID.all_devices() and friends.
  */
