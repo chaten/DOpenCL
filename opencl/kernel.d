@@ -46,4 +46,24 @@ struct Kernel {
     auto err_code = clSetKernelArg(this,arg_index,ptr.length,ptr.ptr);
     assert(err_code == CL_SUCCESS);
   }
+  private {
+    string get_string_info(cl_kernel_info info) {
+      size_t str_size;
+      cl_int err_code = clGetKernelInfo(this,info,0,null,&str_size);
+      assert(err_code == CL_SUCCESS);
+      char[] str = new char[str_size];
+      err_code = clGetKernelInfo(this,info,str_size,str.ptr,null);
+      return cast(immutable) str;
+    }
+  }
+  //Get the function name of the kernel
+  string function_name() { 
+    return get_string_info(CL_KERNEL_FUNCTION_NAME);
+  }
+  int number_of_arguments() {
+    cl_int num_args;
+    cl_int err_code = clGetKernelInfo(this,CL_KERNEL_NUM_ARGS,cl_int.sizeof,&num_args,null);
+    assert(err_code == CL_SUCCESS);
+    return num_args;
+  }
 }

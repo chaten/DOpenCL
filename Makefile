@@ -4,20 +4,23 @@ INSTALL_PATH = /usr
 LIBNAME = opencl
 TARGET = lib/lib$(LIBNAME)_d.a
 SRC = $(wildcard $(LIBNAME)/*.d)
+SRC_I = $(wildcard $(LIBNAME)/*.di)
+DST_I = $(addprefix include/,$(addsuffix .di,$(basename $(SRC_I))))
 TST_SRC = $(wildcard test/*.d)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 TST_OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(TST_SRC))))
 DOCS = $(addprefix docs/,$(addsuffix .html,$(basename $(SRC))))
-.PHONY: clean uninstall all install test docs
-all: $(TARGET)
-install: $(TARGET)
-	@cp -r include $(INSTALL_PATH)/include/d/$(LIBNAME)
-	@cp $(TARGET) $(INSTALL_PATH)/$(TARGET)
+.PHONY: clean uninstall all install test docs build
+all: build
+build: $(TARGET) $(DST_I)
+install: build
+	@cp -rv include/* $(INSTALL_PATH)/include/d/$(LIBNAME)/
+	@cp -v $(TARGET) $(INSTALL_PATH)/$(TARGET)
 uninstall:
-	@rm $(INSTALL_PATH)/$(TARGET)
-	@rm -r $(INSTALL_PATH)/include/d/$(LIBNAME)
+	@rm -v $(INSTALL_PATH)/$(TARGET)
+	@rm -rv $(INSTALL_PATH)/include/d/$(LIBNAME)
 clean:
-	@rm -rf $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin
+	@rm -rfv $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin
 docs: $(DOCS)
 
 test: DCFLAGS = -unittest 
@@ -28,4 +31,6 @@ $(TARGET): $(OBJ)
 build/%.o: %.d
 	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
 docs/%.html: %.d
-	$(DC) -o- $< -Df$@
+	$(DC) -o- $< -Df$@ 
+include/%.di: %.di
+	@cp -v $^ $@
