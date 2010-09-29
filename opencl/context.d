@@ -18,6 +18,7 @@
  */
 module opencl.context;
 import opencl.c;
+import opencl.platform_id;
 import opencl.device_id;
 /***
   Represents an OpenCL context
@@ -38,6 +39,18 @@ struct Context {
   this(ref cl_context_properties properties[],in cl_device_id devices[]) {
     cl_int err_code;
     _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
+    assert(err_code == CL_SUCCESS);
+  }
+  this(PlatformID platform,in cl_device_id devices[]) {
+    cl_int err_code;
+    cl_context_properties []properties = create_context_properties(platform);
+    _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
+    assert(err_code == CL_SUCCESS);
+  }
+  this(PlatformID platform,cl_device_type device_type) { 
+    cl_int err_code;
+    cl_context_properties [] properties = create_context_properties(platform);
+    _context = clCreateContextFromType(properties.ptr,device_type,null,null,&err_code);
     assert(err_code == CL_SUCCESS);
   }
   /***
@@ -76,4 +89,11 @@ struct Context {
     return device_ids;
   }
   /* TODO: context properties */
+}
+cl_context_properties[] create_context_properties(PlatformID platform) {
+  cl_context_properties[] properties = new cl_context_properties[3];
+  properties[0] = cast(cl_context_properties)CL_CONTEXT_PLATFORM;
+  properties[1] = cast(cl_context_properties)platform._id;
+  properties[2] = null;
+  return properties;
 }

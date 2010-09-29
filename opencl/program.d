@@ -51,19 +51,25 @@ struct Program {
   ~this() {
     clReleaseProgram(this);
   }
-
-  void build_program(ref cl_device_id device_list[],in string options) { 
-    auto err_code = clBuildProgram(this,device_list.length,
+  void build() {
+    build("");
+  }
+  void build(in string options) {
+    build(cast(cl_device_id[])null,options);
+  }
+  void build(in cl_device_id device_list[],in string options) {
+    cl_int err_code;
+    if(device_list == null) {
+      err_code = clBuildProgram(this,0,null,toStringz(options),null,null);
+    } else {
+      err_code = clBuildProgram(this,device_list.length,
     			device_list.ptr,toStringz(options),null,null);
+    }
     assert(err_code == CL_SUCCESS);
   }
   ///
-  void build_program(ref DeviceID device_list[],in string options) {
-    cl_device_id device_id_list[] = new cl_device_id[device_list.length];
-    foreach(i,id;device_list) {
-      device_id_list[i] = device_list[i];
-    }
-    build_program(device_id_list,options);
+  void build(in DeviceID device_list[],in string options) {
+    build(cast(const cl_device_id[])device_list,options);
   }
   ///
   cl_uint num_devices() {

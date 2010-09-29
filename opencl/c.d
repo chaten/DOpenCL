@@ -496,7 +496,7 @@ extern(System) {
 	cl_int clReleaseProgram(cl_program );/// 
 	cl_int clBuildProgram(cl_program ,
 						 cl_uint ,
-						cl_device_id * ,
+						const(cl_device_id) * ,
 						const(char) * ,
 						void function(cl_program,void *),
 					void * );/// 
