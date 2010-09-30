@@ -53,6 +53,9 @@ struct Context {
     _context = clCreateContextFromType(properties.ptr,device_type,null,null,&err_code);
     assert(err_code == CL_SUCCESS);
   }
+  this(this) {
+    clRetainContext(this);
+  }
   /***
    * Create me from an exist OpenCL context
    */

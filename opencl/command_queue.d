@@ -42,6 +42,9 @@ struct CommandQueue {
     _queue = clCreateCommandQueue(context,device_id,properties,&err_code);
     assert(err_code == CL_SUCCESS);
   }
+  this(this) {
+    clRetainCommandQueue(this);
+  }
   ~this() {
     auto err_code = clReleaseCommandQueue(this);
     assert(err_code == CL_SUCCESS);

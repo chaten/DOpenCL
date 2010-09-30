@@ -32,6 +32,9 @@ struct Buffer {
     _mem = clCreateBuffer(context,flags,host_ptr.length,host_ptr.ptr,&err_code);
     assert (err_code == CL_SUCCESS);
   }
+  this(this) {
+    clRetainMemObject(this);
+  }
   /***
    * Create a buffer from an existing opencl buffer
    */

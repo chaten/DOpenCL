@@ -48,6 +48,9 @@ struct Program {
   this(cl_program program) {
     _program = program;
   }
+  this(this) {
+    clRetainProgram(this);
+  }
   ~this() {
     clReleaseProgram(this);
   }

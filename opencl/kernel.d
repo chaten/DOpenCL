@@ -39,6 +39,9 @@ struct Kernel {
   this(cl_kernel kernel) {
     _kernel = kernel;
   }
+  this(this) {
+    clRetainKernel(this);
+  }
   ~this() {
     clReleaseKernel(this);
   }
