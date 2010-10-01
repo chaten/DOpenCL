@@ -44,16 +44,16 @@ struct CommandQueue {
     throw_error(err_code);
   }
   this(this) {
-    clRetainCommandQueue(this);
+    throw_error(clRetainCommandQueue(this));
   }
   ~this() {
-    auto err_code = clReleaseCommandQueue(this);
-    throw_error(err_code);
+    throw_error(clReleaseCommandQueue(this));
   }
   /****/
-  void enqueue_nd_range_kernel(Kernel kernel,cl_uint work_dim,in size_t work_size[], in size_t local_work_size[]) {
+  void enqueue_nd_range_kernel(Kernel kernel,cl_uint work_dim,const size_t work_size[], const size_t local_work_size[]) {
+    const size_t * local_work_size_ptr = local_work_size is null?null:local_work_size.ptr;
     auto err_code = clEnqueueNDRangeKernel(this,kernel,work_dim,null,
-    					work_size.ptr,local_work_size.ptr,
+    					work_size.ptr,local_work_size_ptr,
 					0,null,null);
     throw_error(err_code);
   }
