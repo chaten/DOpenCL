@@ -22,6 +22,9 @@ import opencl.error;
 import opencl.c;
 import opencl.context;
 import std.string;
+import std.stdio;
+import std.c.string;
+import std.c.stdio;
 import opencl.device_id;
 /***
  * Represents an OpenCL Program Object
@@ -38,7 +41,8 @@ struct Program {
     size_t lengths[] = new size_t[strings.length];
     foreach(i,str;strings) {
       c_strings[i] = toStringz(str);
-      lengths[i] = str.length + 1;
+      lengths[i] = strlen(c_strings[i]);
+      printf("C Strings[%d]: %s",i,c_strings[i]);
     }
     _program = clCreateProgramWithSource(context,strings.length,c_strings.ptr,
     					lengths.ptr,&err_code);
@@ -56,13 +60,55 @@ struct Program {
   ~this() {
     clReleaseProgram(this);
   }
+  private {
+    T get_program_info(T)(cl_program_info param_name){
+      T param_value;
+      auto err_code = clGetProgramInfo(this,param_name,T.sizeof,&param_value,null);
+      throw_error(err_code);
+      return param_value;
+    }
+    T[] get_program_info_array(T)(cl_program_info param_name) {
+      T[] param_value;
+      size_t param_value_len;
+      auto err_code = clGetProgramInfo(this,param_name,0,null,&param_value_len);
+      throw_error(err_code);
+      param_value = new T[param_value_len];
+      err_code = clGetProgramInfo(this,param_name,T.sizeof * param_value_len,param_value.ptr,null);
+      throw_error(err_code);
+      return param_value;
+    }
+    T get_program_build_info(T)(DeviceID device,cl_program_build_info param_name) {
+      T param_value;
+      auto err_code = clGetProgramBuildInfo(this,device,param_name,T.sizeof,&param_value,null);
+      throw_error(err_code);
+      return param_value;
+    }
+    T[] get_program_build_info_array(T)(DeviceID device,cl_program_build_info param_name) {
+      T[] param_value;
+      size_t param_value_len;
+      auto err_code = clGetProgramBuildInfo(this,device,param_name,0,null,&param_value_len);
+      throw_error(err_code);
+      param_value = new T[param_value_len];
+      err_code = clGetProgramBuildInfo(this,device,param_name,T.sizeof * param_value_len,param_value.ptr,null);
+      throw_error(err_code);
+      return param_value;
+    }
+  }
   void build() {
     build("");
   }
   void build(in string options) {
     build(cast(cl_device_id[])null,options);
   }
-  void build(in cl_device_id device_list[],in string options) {
+  void build(in cl_device_id device_list[],in string options) 
+  in {
+
+  } out {
+    foreach(ref device;devices()) {
+      assert(build_status(device) == CL_BUILD_SUCCESS);
+    }
+  }
+  body {
     cl_int err_code;
     if(device_list == null) {
       err_code = clBuildProgram(this,0,null,toStringz(options),null,null);
@@ -70,6 +116,7 @@ struct Program {
       err_code = clBuildProgram(this,device_list.length,
     			device_list.ptr,toStringz(options),null,null);
     }
+    writefln("err_code %s",err_code); 
     throw_error(err_code);
   }
   ///
@@ -78,33 +125,15 @@ struct Program {
   }
   ///
   cl_uint num_devices() {
-    cl_uint ret;
-    auto err_code = clGetProgramInfo(this,CL_PROGRAM_NUM_DEVICES,ret.sizeof,&ret,null);
-    throw_error(err_code);
-    return ret;
+    return get_program_info!(cl_uint)(CL_PROGRAM_NUM_DEVICES);
   }
   ////
   DeviceID[] devices() {
-    cl_device_id * device_ids;
-    size_t device_ids_len;
-    auto err_code = clGetProgramInfo(this,CL_PROGRAM_DEVICES,device_ids.sizeof,&device_ids,&device_ids_len);
-    DeviceID ret[] = new DeviceID[device_ids_len];
-    for(auto i = 0;i<device_ids_len;i++) {
-      ret[i] = DeviceID(device_ids[i]);
-    }
-    return ret;
+    return cast(DeviceID[])get_program_info_array!(cl_device_id)(CL_PROGRAM_DEVICES);
   }
   ///
   string source() {
-    char * src;
-    size_t src_len;
-    auto err_code = clGetProgramInfo(this,CL_PROGRAM_SOURCE,src.sizeof,&src,&src_len);
-    throw_error(err_code);
-    char ret[] = new char[src_len];
-    for(int i=0;*src != '\0';i++) {
-      ret[i] = *(src++);
-    }
-    return cast(immutable)ret;
+    return cast(immutable)get_program_info_array!(char)(CL_PROGRAM_SOURCE);
   }
   Kernel [] kernels() {
     cl_uint num_kernels;
@@ -117,35 +146,14 @@ struct Program {
   }
   ///
   string build_log(DeviceID device) {
-    char * log;
-    size_t log_len;
-    auto err_code = clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_LOG,
-    						log.sizeof,&log,&log_len);
-    char ret[] = new char[log_len];
-    for(int i = 0;*log != '\0';i++) {
-      ret[i] = *(log++);
-    }
-    return cast(immutable)ret;
+    return cast(immutable)get_program_build_info_array!(char)(device,CL_PROGRAM_BUILD_LOG);
   }
   ///
   cl_build_status build_status(DeviceID device) {
-    cl_build_status status;
-    auto err_code = clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_STATUS,
-    				status.sizeof,&status,null);
-    throw_error(err_code);
-    return status;
+    return get_program_build_info!(cl_build_status)(device,CL_PROGRAM_BUILD_STATUS);
   }
   ///
   string build_options(DeviceID device) {
-    char * options;
-    size_t options_len;
-    auto err_code =  clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_OPTIONS
-    					,options.sizeof,&options,&options_len);
-    throw_error(err_code);
-    char ret[] = new char[options_len];
-    for(int i = 0;*options != '\0';i++) {
-      ret[i] = *(options++);
-    }
-    return cast(immutable)ret;
+    return cast(immutable)get_program_build_info_array!(char)(device,CL_PROGRAM_BUILD_OPTIONS);
   }
 }
