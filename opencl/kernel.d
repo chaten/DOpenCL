@@ -62,7 +62,7 @@ struct Kernel {
       throw_error(err_code);
       char[] str = new char[str_size];
       err_code = clGetKernelInfo(this,info,str_size,str.ptr,null);
-      return cast(immutable) str;
+      return cast(immutable) str[0..str.length-1]; //Strip the null character off the end
     }
   }
   //Get the function name of the kernel
