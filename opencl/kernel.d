@@ -46,12 +46,12 @@ struct Kernel {
     clReleaseKernel(this);
   }
   ///
-  void set_kernel_arg(T)(cl_uint arg_index,in T[] ptr) {
+  void set_kernel_arg(T)(cl_uint arg_index,const ref T[] ptr) {
     auto err_code = clSetKernelArg(this,arg_index,T.sizeof * ptr.length,ptr.ptr);
     assert(err_code == CL_SUCCESS);
   }
   ///
-  void set_kernel_arg(T)(cl_uint arg_index,in T data) {
+  void set_kernel_arg(T)(cl_uint arg_index,const ref T data) {
     auto err_code = clSetKernelArg(this,arg_index,T.sizeof,data);
   }
   private {
