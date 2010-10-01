@@ -46,4 +46,31 @@ struct Buffer {
   ~this() {
     clReleaseMemObject(this);
   }
+  private {
+    T get_info(T)(cl_mem_info param_name) {
+      T param_value;
+      auto err_code = clGetMemObjectInfo(this,param_name,T.sizeof,&param_value,null);
+      throw_error(err_code);
+      return param_value;
+    }
+    T[] get_array_info(T)(cl_mem_info param_name) {
+      T[] param_value;
+      size_t param_value_length;
+      auto err_code = clGetMemObjectInfo(this,param_name,0,null,&param_value_length);
+      throw_error(err_code);
+      param_value = new T[param_value_length];
+      err_code = clGetMemObjectInfo(this,param_name,T.sizeof * param_value.length,param_value.ptr,null);
+      throw_error(err_code);
+      return param_value;
+    }
+  }
+  cl_mem_flags flags() {
+    return get_info!(cl_mem_flags)(CL_MEM_FLAGS);
+  }
+  size_t size() { 
+    return get_info!(size_t)(CL_MEM_SIZE);
+  }
+  void * host_pointer() {
+    return get_info!(void *)(CL_MEM_HOST_PTR);
+  }
 }
