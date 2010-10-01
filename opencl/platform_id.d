@@ -17,6 +17,7 @@
  * License: Apache 2.0
  */
 module opencl.platform_id;
+import opencl.error;
 import opencl.c;
 import opencl.device_id;
 import std.algorithm;
@@ -37,11 +38,11 @@ struct PlatformID {
       char [] ptr;
       size_t ptr_size;
       auto err_code = clGetPlatformInfo(this,info,ptr.sizeof,null,&ptr_size);
-      assert(err_code != CL_INVALID_VALUE);
-      assert(err_code != CL_INVALID_PLATFORM);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       ptr = new char[ptr_size];
       err_code = clGetPlatformInfo(this,info,ptr.sizeof*ptr_size,ptr.ptr,null);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       return cast(immutable)ptr;
     }
@@ -49,6 +50,7 @@ struct PlatformID {
       cl_uint num_devices;
       cl_device_id ids[];
       auto err_code = clGetDeviceIDs(this,type,0,null,&num_devices);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       ids = new cl_device_id[num_devices];
       err_code = clGetDeviceIDs(this,type,cl_device_id.sizeof * num_devices,ids.ptr,null);
@@ -100,6 +102,7 @@ struct PlatformID {
 PlatformID[] get_all_platform_ids() {
   cl_uint num_platforms;
   auto err_code = clGetPlatformIDs(0,null,&num_platforms);
+  throw_error(err_code);
   assert(err_code == CL_SUCCESS);
   return get_platform_ids(num_platforms);
 }
@@ -107,6 +110,7 @@ PlatformID[] get_all_platform_ids() {
 PlatformID[] get_platform_ids(cl_uint num_platforms) {
   cl_platform_id cl_ids[] = new cl_platform_id[num_platforms];
   auto err_code = clGetPlatformIDs(num_platforms,cl_ids.ptr,&num_platforms);
+  throw_error(err_code);
   assert(err_code == CL_SUCCESS);
   PlatformID ids[] = new PlatformID[min(num_platforms,cl_ids.length)];
   foreach(i,id;ids) {

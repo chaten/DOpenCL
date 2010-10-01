@@ -17,6 +17,7 @@
  * License: Apache 2.0
  */
 module opencl.program;
+import opencl.error;
 import opencl.c;
 import opencl.context;
 import std.string;
@@ -40,6 +41,7 @@ struct Program {
     }
     _program = clCreateProgramWithSource(context,strings.length,c_strings.ptr,
     					lengths.ptr,&err_code);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     delete c_strings;
     delete lengths;
@@ -68,6 +70,7 @@ struct Program {
       err_code = clBuildProgram(this,device_list.length,
     			device_list.ptr,toStringz(options),null,null);
     }
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   ///
@@ -78,6 +81,7 @@ struct Program {
   cl_uint num_devices() {
     cl_uint ret;
     auto err_code = clGetProgramInfo(this,CL_PROGRAM_NUM_DEVICES,ret.sizeof,&ret,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     return ret;
   }
@@ -97,6 +101,7 @@ struct Program {
     char * src;
     size_t src_len;
     auto err_code = clGetProgramInfo(this,CL_PROGRAM_SOURCE,src.sizeof,&src,&src_len);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     char ret[] = new char[src_len];
     for(int i=0;*src != '\0';i++) {
@@ -121,6 +126,7 @@ struct Program {
     cl_build_status status;
     auto err_code = clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_STATUS,
     				status.sizeof,&status,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     return status;
   }
@@ -130,6 +136,7 @@ struct Program {
     size_t options_len;
     auto err_code =  clGetProgramBuildInfo(this,device,CL_PROGRAM_BUILD_OPTIONS
     					,options.sizeof,&options,&options_len);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     char ret[] = new char[options_len];
     for(int i = 0;*options != '\0';i++) {

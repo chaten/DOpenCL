@@ -18,6 +18,7 @@
  */
 module opencl.kernel;
 import opencl.c;
+import opencl.error;
 import opencl.buffer;
 import std.string;
 import opencl.program;
@@ -33,6 +34,7 @@ struct Kernel {
   this(Program program,string name) {
     cl_int err_code;
     _kernel = clCreateKernel(program,toStringz(name),&err_code);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   ///Create a Kernel from an existing cl_kernel object
@@ -48,6 +50,7 @@ struct Kernel {
   ///
   void set_kernel_arg(T)(cl_uint arg_index,const ref T[] ptr) {
     auto err_code = clSetKernelArg(this,arg_index,T.sizeof * ptr.length,ptr.ptr);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   ///
@@ -58,6 +61,7 @@ struct Kernel {
     string get_string_info(cl_kernel_info info) {
       size_t str_size;
       cl_int err_code = clGetKernelInfo(this,info,0,null,&str_size);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       char[] str = new char[str_size];
       err_code = clGetKernelInfo(this,info,str_size,str.ptr,null);
@@ -71,6 +75,7 @@ struct Kernel {
   int number_of_arguments() {
     cl_int num_args;
     cl_int err_code = clGetKernelInfo(this,CL_KERNEL_NUM_ARGS,cl_int.sizeof,&num_args,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
     return num_args;
   }

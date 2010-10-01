@@ -1,5 +1,5 @@
 DC = dmd
-DCFLAGS = 
+DCFLAGS = -w
 INSTALL_PATH = /usr
 LIBNAME = opencl
 TARGET = lib/lib$(LIBNAME)_d.a
@@ -23,7 +23,7 @@ clean:
 	@rm -rfv $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin
 docs: $(DOCS)
 
-test: DCFLAGS = -unittest 
+test: DCFLAGS += -unittest 
 test: $(OBJ) $(TST_OBJ)
 	$(DC) $^ -ofbin/test -L-lOpenCL
 $(TARGET): $(OBJ)

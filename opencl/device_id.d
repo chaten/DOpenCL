@@ -18,6 +18,7 @@
  */
 module opencl.device_id;
 import opencl.c;
+import opencl.error;
 /***
  * Represents the ID of an OpenCL device. The standard way to obtain these is from PlatformID.all_devices() and friends.
  */
@@ -31,6 +32,7 @@ struct DeviceID {
     T device_scalar_info(T)(cl_device_info param_name) {
       T param_value;
       auto err_code = clGetDeviceInfo(this,param_name,T.sizeof,&param_value,null);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       return param_value;
     }
@@ -38,9 +40,11 @@ struct DeviceID {
       T[] param_value;
       size_t param_value_size_ret;
       auto err_code = clGetDeviceInfo(this,param_name,T.sizeof,null,&param_value_size_ret);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       param_value = new T[param_value_size_ret];
       err_code = clGetDeviceInfo(this,param_name,T.sizeof * param_value_size_ret,param_value.ptr,null);
+      throw_error(err_code);
       assert(err_code == CL_SUCCESS);
       return param_value;
     }

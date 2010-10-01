@@ -17,6 +17,7 @@
  * License: Apache 2.0
  */
 module opencl.command_queue;
+import opencl.error;
 import opencl.c;
 import opencl.buffer;
 import opencl.kernel;
@@ -40,6 +41,7 @@ struct CommandQueue {
   this(Context context,DeviceID device_id,cl_command_queue_properties properties) {
     cl_int err_code;
     _queue = clCreateCommandQueue(context,device_id,properties,&err_code);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   this(this) {
@@ -47,6 +49,7 @@ struct CommandQueue {
   }
   ~this() {
     auto err_code = clReleaseCommandQueue(this);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   /****/
@@ -54,11 +57,13 @@ struct CommandQueue {
     auto err_code = clEnqueueNDRangeKernel(this,kernel,work_dim,null,
     					work_size.ptr,local_work_size.ptr,
 					0,null,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   ///
   void enqueue_task(Kernel kernel) {
     auto err_code = clEnqueueTask(this,kernel,0,null,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   //TODO: Native Kernel
@@ -67,6 +72,7 @@ struct CommandQueue {
    */
   void enqueue_read_buffer(Buffer buffer,bool blocking,out void [] data) {
     auto err_code = clEnqueueReadBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
   /***
@@ -74,6 +80,7 @@ struct CommandQueue {
    */
   void enqueue_write_buffer(Buffer buffer,bool blocking,in void [] data) {
     auto err_code = clEnqueueWriteBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
+    throw_error(err_code);
     assert(err_code == CL_SUCCESS);
   }
 }

@@ -20,6 +20,7 @@ module opencl.buffer;
 import opencl.c;
 import opencl.context;
 import opencl.command_queue;
+import opencl.error;
 /*** A buffer reperesents memory stored on the opencl device */
 struct Buffer {
   cl_mem _mem; ///The opencl memory structure buffer is based on
@@ -30,6 +31,7 @@ struct Buffer {
   this(Context context,cl_mem_flags flags,void [] host_ptr) {
     cl_int err_code;
     _mem = clCreateBuffer(context,flags,host_ptr.length,host_ptr.ptr,&err_code);
+    throw_error(err_code);
     assert (err_code == CL_SUCCESS);
   }
   this(this) {
