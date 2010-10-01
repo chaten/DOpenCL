@@ -17,6 +17,7 @@
  * License: Apache 2.0
  */
 module opencl.program;
+import opencl.kernel;
 import opencl.error;
 import opencl.c;
 import opencl.context;
@@ -104,6 +105,15 @@ struct Program {
       ret[i] = *(src++);
     }
     return cast(immutable)ret;
+  }
+  Kernel [] kernels() {
+    cl_uint num_kernels;
+    auto err_code = clCreateKernelsInProgram(this,0,null,&num_kernels);
+    throw_error(err_code);
+    Kernel [] kernels = new Kernel[num_kernels];
+    err_code = clCreateKernelsInProgram(this,num_kernels,cast(cl_kernel *)kernels.ptr,null);
+    throw_error(err_code);
+    return kernels;
   }
   ///
   string build_log(DeviceID device) {
