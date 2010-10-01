@@ -13,8 +13,9 @@ void main() {
     writefln("Profile: %s",id.profile());
     DeviceID devices[] = id.all_devices();
     foreach(j,device;devices) {
-      writefln("Device[%d]",j);
+      writefln("Device[%d]:%s",j,device.name());
       writefln("Global Mem Size: %d",device.global_mem_size());
+      writefln("Local Mem Size: %d",device.local_mem_size());
       writefln("Image Support: %s",device.has_image_support());
       writefln("Extensions: %s",device.extensions());
     }
