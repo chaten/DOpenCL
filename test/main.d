@@ -1,6 +1,6 @@
 import std.stdio;
-import DOpenCL.platform_id;
-import DOpenCL.device_id;
+import opencl.platform_id;
+import opencl.device_id;
 void main() { 
   writefln("Platform Info");
   PlatformID ids[] = get_all_platform_ids();
