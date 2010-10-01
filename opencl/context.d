@@ -21,6 +21,7 @@ import opencl.error;
 import opencl.c;
 import opencl.platform_id;
 import std.stdio;
+import opencl._get_info;
 import opencl.device_id;
 /***
   Represents an OpenCL context
@@ -28,6 +29,7 @@ import opencl.device_id;
 struct Context {
   cl_context _context;
   alias _context this;
+  mixin get_info;
   /***
   */
   this(ref cl_context_properties properties[],cl_device_type device_type) {
@@ -69,31 +71,20 @@ struct Context {
     writefln("Release ctx %s",_context);
     clReleaseContext(this);
   }
+  private cl_int delegate(size_t,A *,size_t *) info_delegate(A)(cl_context_info param_name) {
+    return (size_t size,A * ptr,size_t * size_ret) { return clGetContextInfo(this,param_name,size,ptr,size_ret);};
+  }
   /***
    * Get the number of devices that this context has
    */
   cl_uint num_devices() {
-    cl_uint ret;
-    cl_int err_code = clGetContextInfo(this,CL_CONTEXT_NUM_DEVICES,ret.sizeof,&ret,null);
-    throw_error(err_code);
-    return ret;
+    return get_info(info_delegate!(cl_uint)(CL_CONTEXT_NUM_DEVICES));
   }
   /***
    * Get all of the devices this context has
    */
   DeviceID[] device_ids() {
-    cl_uint devices_len = num_devices();
-    cl_device_id cl_device_ids[] = new cl_device_id[devices_len];
-    cl_int err_code = clGetContextInfo(this,CL_CONTEXT_DEVICES,
-		     cl_device_ids.length * cl_device_id.sizeof,
-		     cl_device_ids.ptr,null);
-    throw_error(err_code);
-    DeviceID device_ids[] = new DeviceID[devices_len];
-    foreach(i,device_id;cl_device_ids) {
-      device_ids[i] = DeviceID(device_id);
-    }
-    delete cl_device_ids;
-    return device_ids;
+    return get_info_array(info_delegate!(DeviceID)(CL_CONTEXT_DEVICES));
   }
   /* TODO: context properties */
 }

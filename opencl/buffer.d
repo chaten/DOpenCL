@@ -20,6 +20,7 @@ module opencl.buffer;
 import opencl.c;
 import opencl.context;
 import opencl.command_queue;
+import opencl._get_info;
 import opencl.error;
 /*** A buffer reperesents memory stored on the opencl device */
 struct Buffer {
@@ -46,31 +47,18 @@ struct Buffer {
   ~this() {
     clReleaseMemObject(this);
   }
-  private {
-    T get_info(T)(cl_mem_info param_name) {
-      T param_value;
-      auto err_code = clGetMemObjectInfo(this,param_name,T.sizeof,&param_value,null);
-      throw_error(err_code);
-      return param_value;
-    }
-    T[] get_array_info(T)(cl_mem_info param_name) {
-      T[] param_value;
-      size_t param_value_length;
-      auto err_code = clGetMemObjectInfo(this,param_name,0,null,&param_value_length);
-      throw_error(err_code);
-      param_value = new T[param_value_length];
-      err_code = clGetMemObjectInfo(this,param_name,T.sizeof * param_value.length,param_value.ptr,null);
-      throw_error(err_code);
-      return param_value;
-    }
+  mixin get_info;
+  private cl_int delegate(size_t,A *,size_t *) get_delegate(A)(cl_mem_info param_name) {
+    return (size_t size,A * ptr,size_t * size_ret) { return clGetMemObjectInfo(this,param_name,size,ptr,size_ret);};
   }
   cl_mem_flags flags() {
-    return get_info!(cl_mem_flags)(CL_MEM_FLAGS);
+    return get_info(get_delegate!(cl_mem_flags)(CL_MEM_FLAGS));
   }
-  size_t size() { 
-    return get_info!(size_t)(CL_MEM_SIZE);
+  size_t size() {
+    return get_info(get_delegate!(size_t)(CL_MEM_SIZE));
   }
   void * host_pointer() {
-    return get_info!(void *)(CL_MEM_HOST_PTR);
+    return get_info(get_delegate!(void *)(CL_MEM_HOST_PTR));
   }
+ 
 }

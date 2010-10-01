@@ -18,6 +18,7 @@
  */
 module opencl.kernel;
 import opencl.c;
+import opencl._get_info;
 import opencl.error;
 import opencl.buffer;
 import std.string;
@@ -47,32 +48,19 @@ struct Kernel {
     clReleaseKernel(this);
   }
   ///
-  void set_kernel_arg(T)(cl_uint arg_index,const ref T[] ptr) {
-    auto err_code = clSetKernelArg(this,arg_index,T.sizeof * ptr.length,ptr.ptr);
+  void set_kernel_arg(T)(cl_uint arg_index,const T * data) {
+    auto err_code = clSetKernelArg(this,arg_index,T.sizeof,data);
     throw_error(err_code);
   }
-  ///
-  void set_kernel_arg(T)(cl_uint arg_index,const ref T data) {
-    auto err_code = clSetKernelArg(this,arg_index,T.sizeof,data);
-  }
-  private {
-    string get_string_info(cl_kernel_info info) {
-      size_t str_size;
-      cl_int err_code = clGetKernelInfo(this,info,0,null,&str_size);
-      throw_error(err_code);
-      char[] str = new char[str_size];
-      err_code = clGetKernelInfo(this,info,str_size,str.ptr,null);
-      return cast(immutable) str[0..str.length-1]; //Strip the null character off the end
-    }
+  mixin get_info;
+  private cl_int delegate(size_t,A *,size_t *) info_delegate(A)(cl_kernel_info param_name) {
+    return (size_t size,A * ptr,size_t * size_ret) { return clGetKernelInfo(this,param_name,size,ptr,size_ret);};
   }
   //Get the function name of the kernel
-  string function_name() { 
-    return get_string_info(CL_KERNEL_FUNCTION_NAME);
+  string function_name() {
+    return get_info_string(info_delegate!(char)(CL_KERNEL_FUNCTION_NAME));
   }
   int number_of_arguments() {
-    cl_int num_args;
-    cl_int err_code = clGetKernelInfo(this,CL_KERNEL_NUM_ARGS,cl_int.sizeof,&num_args,null);
-    throw_error(err_code);
-    return num_args;
+    return get_info(info_delegate!(cl_int)(CL_KERNEL_NUM_ARGS));
   }
 }

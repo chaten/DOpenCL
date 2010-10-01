@@ -19,6 +19,7 @@
 module opencl.platform_id;
 import opencl.error;
 import opencl.c;
+import opencl._get_info;
 import opencl.device_id;
 import std.algorithm;
 /***
@@ -33,16 +34,13 @@ struct PlatformID {
   this(cl_platform_id id) {
     _id = id;
   }
+  mixin get_info;
   private {
+    cl_int delegate(size_t,A *,size_t *) info_delegate(A)(cl_platform_info info) {
+      return (size_t size,A * ptr,size_t * size_ret){return clGetPlatformInfo(this,info,size,ptr,size_ret);};
+    }
     string get_str_info(cl_platform_info info) {
-      char [] ptr;
-      size_t ptr_size;
-      auto err_code = clGetPlatformInfo(this,info,ptr.sizeof,null,&ptr_size);
-      throw_error(err_code);
-      ptr = new char[ptr_size];
-      err_code = clGetPlatformInfo(this,info,ptr.sizeof*ptr_size,ptr.ptr,null);
-      throw_error(err_code);
-      return cast(immutable)ptr;
+      return get_info_string(info_delegate!(char)(info));
     }
     DeviceID [] get_devices(cl_device_type type) {
       cl_uint num_devices;
@@ -51,11 +49,8 @@ struct PlatformID {
       throw_error(err_code);
       ids = new cl_device_id[num_devices];
       err_code = clGetDeviceIDs(this,type,cl_device_id.sizeof * num_devices,ids.ptr,null);
-      DeviceID device_ids[] = new DeviceID[ids.length];
-      foreach(i,id;ids) {
-        device_ids[i] = DeviceID(ids[i]);
-      }
-      return device_ids;
+      throw_error(err_code);
+      return cast(DeviceID[]) ids;
     }
   }
   ///
