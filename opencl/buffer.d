@@ -32,7 +32,7 @@ struct Buffer {
     cl_int err_code;
     _mem = clCreateBuffer(context,flags,host_ptr.length,host_ptr.ptr,&err_code);
     throw_error(err_code);
-    assert (err_code == CL_SUCCESS);
+    
   }
   this(this) {
     clRetainMemObject(this);

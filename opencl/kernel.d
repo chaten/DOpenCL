@@ -35,7 +35,6 @@ struct Kernel {
     cl_int err_code;
     _kernel = clCreateKernel(program,toStringz(name),&err_code);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   ///Create a Kernel from an existing cl_kernel object
   this(cl_kernel kernel) {
@@ -51,7 +50,6 @@ struct Kernel {
   void set_kernel_arg(T)(cl_uint arg_index,const ref T[] ptr) {
     auto err_code = clSetKernelArg(this,arg_index,T.sizeof * ptr.length,ptr.ptr);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   ///
   void set_kernel_arg(T)(cl_uint arg_index,const ref T data) {
@@ -62,7 +60,6 @@ struct Kernel {
       size_t str_size;
       cl_int err_code = clGetKernelInfo(this,info,0,null,&str_size);
       throw_error(err_code);
-      assert(err_code == CL_SUCCESS);
       char[] str = new char[str_size];
       err_code = clGetKernelInfo(this,info,str_size,str.ptr,null);
       return cast(immutable) str;
@@ -76,7 +73,6 @@ struct Kernel {
     cl_int num_args;
     cl_int err_code = clGetKernelInfo(this,CL_KERNEL_NUM_ARGS,cl_int.sizeof,&num_args,null);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
     return num_args;
   }
 }

@@ -35,7 +35,6 @@ struct Context {
     _context = clCreateContextFromType(properties.ptr,device_type,null,null,
     		&err_code);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   /***
   */
@@ -43,21 +42,18 @@ struct Context {
     cl_int err_code;
     _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   this(PlatformID platform,in cl_device_id devices[]) {
     cl_int err_code;
     cl_context_properties []properties = create_context_properties(platform);
     _context = clCreateContext(properties.ptr,devices.length,devices.ptr,null,null,&err_code);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   this(PlatformID platform,cl_device_type device_type) { 
     cl_int err_code;
     cl_context_properties [] properties = create_context_properties(platform);
     _context = clCreateContextFromType(properties.ptr,device_type,null,null,&err_code);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
   }
   this(this) {
     writefln("Retain ctx %s",_context);
@@ -80,7 +76,6 @@ struct Context {
     cl_uint ret;
     cl_int err_code = clGetContextInfo(this,CL_CONTEXT_NUM_DEVICES,ret.sizeof,&ret,null);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
     return ret;
   }
   /***
@@ -93,7 +88,6 @@ struct Context {
 		     cl_device_ids.length * cl_device_id.sizeof,
 		     cl_device_ids.ptr,null);
     throw_error(err_code);
-    assert(err_code == CL_SUCCESS);
     DeviceID device_ids[] = new DeviceID[devices_len];
     foreach(i,device_id;cl_device_ids) {
       device_ids[i] = DeviceID(device_id);

@@ -39,11 +39,9 @@ struct PlatformID {
       size_t ptr_size;
       auto err_code = clGetPlatformInfo(this,info,ptr.sizeof,null,&ptr_size);
       throw_error(err_code);
-      assert(err_code == CL_SUCCESS);
       ptr = new char[ptr_size];
       err_code = clGetPlatformInfo(this,info,ptr.sizeof*ptr_size,ptr.ptr,null);
       throw_error(err_code);
-      assert(err_code == CL_SUCCESS);
       return cast(immutable)ptr;
     }
     DeviceID [] get_devices(cl_device_type type) {
@@ -51,7 +49,6 @@ struct PlatformID {
       cl_device_id ids[];
       auto err_code = clGetDeviceIDs(this,type,0,null,&num_devices);
       throw_error(err_code);
-      assert(err_code == CL_SUCCESS);
       ids = new cl_device_id[num_devices];
       err_code = clGetDeviceIDs(this,type,cl_device_id.sizeof * num_devices,ids.ptr,null);
       DeviceID device_ids[] = new DeviceID[ids.length];
@@ -103,7 +100,6 @@ PlatformID[] get_all_platform_ids() {
   cl_uint num_platforms;
   auto err_code = clGetPlatformIDs(0,null,&num_platforms);
   throw_error(err_code);
-  assert(err_code == CL_SUCCESS);
   return get_platform_ids(num_platforms);
 }
 /// Get N platforms available on this system
@@ -111,7 +107,6 @@ PlatformID[] get_platform_ids(cl_uint num_platforms) {
   cl_platform_id cl_ids[] = new cl_platform_id[num_platforms];
   auto err_code = clGetPlatformIDs(num_platforms,cl_ids.ptr,&num_platforms);
   throw_error(err_code);
-  assert(err_code == CL_SUCCESS);
   PlatformID ids[] = new PlatformID[min(num_platforms,cl_ids.length)];
   foreach(i,id;ids) {
     ids[i] = PlatformID(cl_ids[i]);

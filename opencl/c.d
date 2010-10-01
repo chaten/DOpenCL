@@ -14,11 +14,12 @@
   limitations under the License.
 */
 module opencl.c;///
+import opencl.error;
 unittest {
-	uint num_entries = 10;///
-	cl_platform_id entries[] = new cl_platform_id[num_entries];///
-	cl_int err = clGetPlatformIDs(num_entries,entries.ptr,&num_entries);///
-	assert(err == CL_SUCCESS);///
+	uint num_entries = 10;
+	cl_platform_id entries[] = new cl_platform_id[num_entries];
+	cl_int err = clGetPlatformIDs(num_entries,entries.ptr,&num_entries);
+	throw_error(err);
 }
 extern(System) {
 	enum {
