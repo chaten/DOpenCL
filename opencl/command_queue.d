@@ -23,6 +23,7 @@ import opencl.buffer;
 import opencl.kernel;
 import opencl.context;
 import opencl.device_id;
+import std.stdio;
 /***
   Represents an OpenCL Command Queue.
  */

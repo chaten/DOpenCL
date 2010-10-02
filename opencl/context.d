@@ -58,8 +58,7 @@ struct Context {
     throw_error(err_code);
   }
   this(this) {
-    writefln("Retain ctx %s",_context);
-    clRetainContext(this);
+    throw_error(clRetainContext(this));
   }
   /***
    * Create me from an exist OpenCL context
@@ -68,8 +67,7 @@ struct Context {
     _context = my_context;
   }
   ~this() {
-    writefln("Release ctx %s",_context);
-    clReleaseContext(this);
+    throw_error(clReleaseContext(this));
   }
   private cl_int delegate(size_t,A *,size_t *) info_delegate(A)(cl_context_info param_name) {
     return (size_t size,A * ptr,size_t * size_ret) { return clGetContextInfo(this,param_name,size,ptr,size_ret);};
