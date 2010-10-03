@@ -18,6 +18,7 @@
  */
 module opencl.command_queue;
 import opencl.error;
+import opencl.event;
 import opencl.c;
 import opencl.buffer;
 import opencl.kernel;
@@ -51,31 +52,35 @@ struct CommandQueue {
     throw_error(clReleaseCommandQueue(this));
   }
   /****/
-  void enqueue_nd_range_kernel(Kernel kernel,cl_uint work_dim,const size_t work_size[], const size_t local_work_size[]) {
+  Event enqueue_nd_range_kernel(Kernel kernel,cl_uint work_dim,const size_t work_size[], const size_t local_work_size[]) {
     const size_t * local_work_size_ptr = local_work_size is null?null:local_work_size.ptr;
-    auto err_code = clEnqueueNDRangeKernel(this,kernel,work_dim,null,
+    cl_event event;
+    throw_error(clEnqueueNDRangeKernel(this,kernel,work_dim,null,
     					work_size.ptr,local_work_size_ptr,
-					0,null,null);
-    throw_error(err_code);
+					0,null,&event));
+    return Event(event);
   }
   ///
-  void enqueue_task(Kernel kernel) {
-    auto err_code = clEnqueueTask(this,kernel,0,null,null);
-    throw_error(err_code);
+  Event enqueue_task(Kernel kernel) {
+    cl_event event;
+    throw_error(clEnqueueTask(this,kernel,0,null,&event));
+    return Event(event);
   }
   //TODO: Native Kernel
   /***
    *  Read data from the buffer into the array
    */
-  void enqueue_read_buffer(Buffer buffer,bool blocking,out void [] data) {
-    auto err_code = clEnqueueReadBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
-    throw_error(err_code);
+  Event enqueue_read_buffer(Buffer buffer,bool blocking,out void [] data) {
+    cl_event event;
+    throw_error(clEnqueueReadBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,&event));
+    return Event(event);
   }
   /***
    * Write data into the buffer from the array
    */
-  void enqueue_write_buffer(Buffer buffer,bool blocking,in void [] data) {
-    auto err_code = clEnqueueWriteBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,null);
-    throw_error(err_code);
+  Event enqueue_write_buffer(Buffer buffer,bool blocking,in void [] data) {
+    cl_event event;
+    throw_error(clEnqueueWriteBuffer(this,buffer,blocking,0,data.length,data.ptr,0,null,&event));
+    return Event(event);
   }
 }

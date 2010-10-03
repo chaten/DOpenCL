@@ -535,9 +535,11 @@ extern(System) {
 						cl_kernel_work_group_info,
 						size_t ,
 						void * ,
-						size_t * );/// 
-	cl_int clWaitForEvents(cl_uint ,
-						cl_event *);///
+						size_t * );///
+	cl_int clWaitForEvents(cl_uint ,const cl_event *);///
+	cl_event clCreateUserEvent(cl_context,cl_int *);///
+	cl_int clSetUserEventStatus(cl_event,cl_int);///
+	cl_int clSetEventCallback(cl_event,cl_int,void function(cl_event,cl_int,void*),void*);///
 	cl_int clGetEventInfo(cl_event ,
 					 cl_event_info,
 					 size_t ,
