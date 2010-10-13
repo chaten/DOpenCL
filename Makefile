@@ -9,7 +9,7 @@ DST_I = $(addprefix include/,$(addsuffix .di,$(basename $(SRC_I))))
 TST_SRC = $(wildcard test/*.d)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 TST_OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(TST_SRC))))
-DOCS = $(addprefix docs/,$(addsuffix .html,$(basename $(SRC))))
+DOCS = $(addprefix docs/,$(addsuffix .md,$(basename $(SRC))))
 .PHONY: clean uninstall all install test docs build
 all: build
 build: $(TARGET) $(DST_I)
@@ -30,7 +30,7 @@ $(TARGET): $(OBJ)
 	$(DC) -lib $^ -of$@
 build/%.o: %.d
 	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
-docs/%.html: %.d
-	$(DC) -o- $< -Df$@ 
+docs/%.md: %.d
+	$(DC) -o- $< -Df$@ markdown.ddoc
 include/%.di: %.di
 	@cp -v $^ $@
