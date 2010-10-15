@@ -1,5 +1,5 @@
 DC = dmd
-DCFLAGS = -w
+DCFLAGS = -w -wi 
 INSTALL_PATH = /usr
 LIBNAME = opencl
 TARGET = lib/lib$(LIBNAME)_d.a

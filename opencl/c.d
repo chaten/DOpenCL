@@ -14,13 +14,6 @@
   limitations under the License.
 */
 module opencl.c;///
-import opencl.error;
-unittest {
-	uint num_entries = 10;
-	cl_platform_id entries[] = new cl_platform_id[num_entries];
-	cl_int err = clGetPlatformIDs(num_entries,entries.ptr,&num_entries);
-	throw_error(err);
-}
 extern(System) {
 	enum {
 		CL_SUCCESS = 0,
@@ -380,16 +373,29 @@ extern(System) {
 	alias double cl_double;///
 	alias uint		cl_GLuint;///
 	alias int cl_GLint;///
-	alias uint		cl_GLenum;/// 
-	alias void *cl_platform_id;///
-	alias void *cl_device_id;///
-	alias void *cl_context;///
-	alias void *cl_command_queue;///
-	alias void *cl_mem;///
-	alias void *cl_program;///
-	alias void *cl_kernel;///
-	alias void *cl_event;///
-	alias void *cl_sampler;///
+	alias uint		cl_GLenum;///
+
+	alias _cl_platform_id * cl_platform_id;///
+	alias _cl_device_id * cl_device_id;///
+	alias _cl_context * cl_context;///
+	alias _cl_command_queue *cl_command_queue;///
+	alias _cl_mem *cl_mem;///
+	alias _cl_program *cl_program;///
+	alias _cl_kernel *cl_kernel;///
+	alias _cl_event *cl_event;///
+	alias _cl_sampler *cl_sampler;///
+	//DO NOT DEREFERNCE TO THESE
+	struct _cl_platform_id {};
+	struct _cl_device_id {};
+	struct _cl_context {};
+	struct _cl_command_queue {};
+	struct _cl_mem {};
+	struct _cl_program{};
+	struct _cl_kernel{};
+	struct _cl_event{};
+	struct _cl_sampler{};
+
+
 	alias cl_uint cl_bool;/// 
 	alias cl_ulong cl_bitfield;///
 	alias cl_bitfield cl_device_type;///
@@ -665,7 +671,7 @@ extern(System) {
 							 const(size_t) * ,
 							 const(size_t) * ,
 							 cl_uint,
-								cl_event * ,
+							 const(cl_event) * ,
 							 cl_event * );///
 		 cl_int clEnqueueTask(cl_command_queue,
 					cl_kernel ,
