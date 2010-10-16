@@ -55,6 +55,17 @@ string create_cl_type_enum(string name,string prefix,string [] types...) {
 	ret ~= "}\n";
 	ret ~= create_type_variable(name,c_type);
 	ret ~= create_type_variable(c_type,name);
+	ret ~= create_enum_to_string_func(name,types);
+	return ret;
+}
+string create_enum_to_string_func(string name,string[] types) {
+	string ret;
+	ret ~= "string toString("~name~" value) {";
+	ret ~= "final switch (value) {";
+	foreach(type;types) {
+		ret ~= "case "~name~"."~type~": return \""~type~"\";\n";
+	}
+	ret ~= "}}";
 	return ret;
 }
 string map_info_enums_to_types(E)(string[E] types) if(is(E == enum)) {
@@ -79,12 +90,14 @@ string create_type_variable(string name,string equals){
 string convert_info_variable(T)(T t) if(is(T == enum)){
 	return "_info_var" ~ T.stringof~toString(t);
 }
+/*
 string toString(E)(E value) if (is(E == enum)) {
 	foreach(s;__traits(allMembers,E)) {
-		if(value == mixin("E." ~ s)) return s;
+		if(value == mixin(E.stringof ~"." ~ s)) return s;
 	}
 	assert(0);
 }
+*/
 mixin(create_cl_type_enum("Error","CL","SUCCESS","DEVICE_NOT_FOUND","DEVICE_NOT_AVAILABLE","COMPILER_NOT_AVAILABLE","MEM_OBJECT_ALLOCATION_FAILURE","OUT_OF_RESOURCES","OUT_OF_HOST_MEMORY","PROFILING_INFO_NOT_AVAILABLE","MEM_COPY_OVERLAP","IMAGE_FORMAT_MISMATCH","IMAGE_FORMAT_NOT_SUPPORTED","BUILD_PROGRAM_FAILURE","MAP_FAILURE","MISALIGNED_SUB_BUFFER_OFFSET","EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST","INVALID_VALUE","INVALID_DEVICE_TYPE","INVALID_PLATFORM","INVALID_DEVICE","INVALID_CONTEXT","INVALID_QUEUE_PROPERTIES","INVALID_COMMAND_QUEUE","INVALID_HOST_PTR","INVALID_MEM_OBJECT","INVALID_IMAGE_FORMAT_DESCRIPTOR","INVALID_IMAGE_SIZE","INVALID_BINARY","INVALID_BUILD_OPTIONS","INVALID_PROGRAM","INVALID_PROGRAM_EXECUTABLE","INVALID_KERNEL_NAME","INVALID_KERNEL_DEFINITION","INVALID_KERNEL","INVALID_ARG_INDEX","INVALID_ARG_VALUE","INVALID_ARG_SIZE","INVALID_KERNEL_ARGS","INVALID_WORK_DIMENSION","INVALID_WORK_GROUP_SIZE","INVALID_WORK_ITEM_SIZE","INVALID_GLOBAL_OFFSET","INVALID_EVENT_WAIT_LIST","INVALID_EVENT","INVALID_OPERATION","INVALID_GL_OBJECT","INVALID_BUFFER_SIZE","INVALID_MIP_LEVEL","INVALID_GLOBAL_WORK_SIZE","INVALID_PROPERTY"));
 
 mixin(create_cl_type_enum("PlatformInfo","CL_PLATFORM","PROFILE","VERSION","NAME","VENDOR","EXTENSIONS"));

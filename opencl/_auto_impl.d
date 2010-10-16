@@ -2,8 +2,9 @@ module opencl._auto_impl;
 import std.traits;
 public import opencl.types;
 import opencl._error_handling;
+import opencl.platform_id;
+import opencl.device_id;
 import opencl.c;
-public import opencl.api;
 A get_info(A,E)(E e,cl_int delegate(E,size_t size,void * ptr,size_t * size_ret) info) if(!isArray!A) {
 	A value;
 	handle_error(info(e,A.sizeof,&value,null));

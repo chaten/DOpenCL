@@ -5,6 +5,7 @@ import opencl.c;
 import opencl.types;
 import opencl._error_handling;
 import opencl._conv;
+import opencl.platform_id;
 import opencl._auto_impl;
 mixin(create_type_variable("_cl_device_id","DeviceID"));
 class DeviceID {
@@ -22,6 +23,7 @@ class DeviceID {
 }
 
 unittest {
+	writeln("Running DeviceID tests");
 	//Print out every field
 	PlatformID platform = PlatformID.all()[0];
 	DeviceID[] ids = platform.devices();

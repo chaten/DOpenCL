@@ -1,5 +1,6 @@
 module opencl.platform_id;
 import opencl.c;
+import opencl.device_id;
 import opencl._auto_impl;
 import opencl._conv;
 import opencl._error_handling;
