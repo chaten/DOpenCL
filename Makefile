@@ -9,7 +9,9 @@ DST_I = $(addprefix include/,$(addsuffix .di,$(basename $(SRC_I))))
 TST_SRC = $(wildcard test/*.d)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 OBJ += $(addprefix build/,$(addsuffix .o,$(basename $(SRC_I))))
-TST_OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(TST_SRC))))
+TST_OBJ = $(addprefix test_build/,$(addsuffix .o,$(basename $(TST_SRC))))
+TST_OBJ += $(addprefix test_build/,$(addsuffix .o,$(basename $(SRC))))
+TST_OBJ += $(addprefix test_build/,$(addsuffix .o,$(basename $(SRC_I))))
 DOCS = $(addprefix docs/,$(addsuffix .md,$(basename $(SRC))))
 .PHONY: clean uninstall all install test docs build
 all: build
@@ -21,17 +23,21 @@ uninstall:
 	@rm -v $(INSTALL_PATH)/$(TARGET)
 	@rm -rv $(INSTALL_PATH)/include/d/$(LIBNAME)
 clean:
-	@rm -rfv $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin
+	@rm -rfv $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin test_build
 docs: $(DOCS)
 
 test: DCFLAGS += -unittest 
-test: $(OBJ) $(TST_OBJ)
+test: $(TST_OBJ)
 	$(DC) $^ -ofbin/test -L-lOpenCL
 $(TARGET): $(OBJ)
 	$(DC) -lib $^ -of$@
 build/%.o: %.d
 	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
 build/%.o: %.di
+	$(DC) -c $(DCFLAGS) $< -of$@
+test_build/%.o: %.d
+	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
+test_build/%.o: %.di
 	$(DC) -c $(DCFLAGS) $< -of$@ 
 docs/%.md: %.d
 	$(DC) -o- $< -Df$@ markdown.ddoc

@@ -2,6 +2,7 @@ module opencl._auto_impl;
 import std.traits;
 public import opencl.types;
 import opencl._error_handling;
+import std.stdio;
 import opencl.platform_id;
 import opencl.device_id;
 import opencl.c;

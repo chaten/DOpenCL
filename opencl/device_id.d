@@ -1,4 +1,5 @@
 module opencl.device_id;
+import std.conv;
 import std.traits;
 import std.stdio;
 import opencl.c;
@@ -27,9 +28,19 @@ unittest {
 	//Print out every field
 	PlatformID platform = PlatformID.all()[0];
 	DeviceID[] ids = platform.devices();
-	foreach(id;ids) {
+	foreach(i,id;ids) {
+		writefln("\nDeviceID[%s/%s]",i,ids.length-1);
 		foreach(member;EnumMembers!(DeviceInfo)) {
-			writefln("%s: %s",name_of(member),mixin("id."~name_of(member)));
+			auto val = mixin("id."~name_of(member));
+			string print_val;
+			static if(is(typeof(val) == enum) || is(typeof(val) == struct)) {
+				print_val = name_of(val);
+			} else static if(is(typeof(val) == PlatformID)) {
+				print_val = val.NAME();
+			}else {
+				print_val = to!(string)(val);
+			}
+			writefln("%s: %s",name_of(member),print_val);
 		}
 	}
 }

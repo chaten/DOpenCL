@@ -407,7 +407,7 @@ extern(System) {
 	alias cl_uint cl_device_local_mem_type;///
 	alias cl_bitfield cl_device_exec_capabilities;///
 	alias cl_bitfield cl_command_queue_properties;///
-	alias int * cl_context_properties;///
+	alias size_t cl_context_properties;///
 	alias cl_uint cl_context_info;///
 	alias cl_uint cl_command_queue_info;///
 	alias cl_uint cl_channel_order;///
@@ -416,6 +416,7 @@ extern(System) {
 	alias cl_uint cl_mem_object_type;///
 	alias cl_uint cl_mem_info;///
 	alias cl_uint cl_image_info;///
+	alias cl_uint cl_buffer_create_type;///
 	alias cl_uint cl_addressing_mode;///
 	alias cl_uint cl_filter_mode;///
 	alias cl_uint cl_sampler_info;///

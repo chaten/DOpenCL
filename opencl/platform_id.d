@@ -34,3 +34,14 @@ class PlatformID {
 	}
 	mixin(ExpandGetInfoFunction!(PlatformInfo,"platform_info"));
 }
+import std.traits;
+import std.stdio;
+unittest {
+	PlatformID[] ids = PlatformID.all();
+	foreach(i,id;ids) {
+		writefln("\nPlatformID[%s]",i);
+		foreach(member;EnumMembers!(PlatformInfo)) {
+			writefln("%s: %s",name_of(member),mixin("id."~name_of(member)));
+		}
+	}
+}
