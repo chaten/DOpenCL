@@ -29,7 +29,7 @@ unittest {
 	DeviceID[] ids = platform.devices();
 	foreach(id;ids) {
 		foreach(member;EnumMembers!(DeviceInfo)) {
-			writefln("%s: %s",toString(member),mixin("id."~toString(member)));
+			writefln("%s: %s",name_of(member),mixin("id."~name_of(member)));
 		}
 	}
 }

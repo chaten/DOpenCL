@@ -5,15 +5,16 @@ import opencl.c;
 import opencl.platform_id;
 import opencl.device_id;
 import std.stdio;
+template arrayTarget(T:T[]) {
+	alias T arrayTarget;
+}
 auto convert(T)(T value) if(!isArray!(T)) {
 	return _convertImpl!T(value);
 }
 auto convert(T)(T array)if(isArray!(T)) {
-	auto first = convert(array[0]);
-	alias typeof(first) R;
+	alias typeof(convert(array[0])) R;
 	R[] r_array = new R[array.length];
-	r_array[0] = first;
-	foreach(i,ref r;r_array[1..array.length]) {
+	foreach(i,ref r;r_array) {
 		r = convert(array[i]);
 	}
 	return r_array;

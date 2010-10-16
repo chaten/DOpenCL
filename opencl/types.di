@@ -60,10 +60,16 @@ string create_cl_type_enum(string name,string prefix,string [] types...) {
 }
 string create_enum_to_string_func(string name,string[] types) {
 	string ret;
-	ret ~= "string toString("~name~" value) {";
+	ret ~= "string name_of("~name~" value) {";
 	ret ~= "final switch (value) {";
 	foreach(type;types) {
 		ret ~= "case "~name~"."~type~": return \""~type~"\";\n";
+	}
+	ret ~= "}}";
+	ret ~= "string full_name_of("~name~" value) {";
+	ret ~= "final switch (value) {";
+	foreach(type;types) {
+		ret ~= "case "~name~"."~type~": return \""~name~"."~type~"\";\n";
 	}
 	ret ~= "}}";
 	return ret;
@@ -88,7 +94,7 @@ string create_type_variable(string name,string equals){
 	return "const string "~convert_types_variable(name)~" = \"" ~ equals ~ "\";";
 }
 string convert_info_variable(T)(T t) if(is(T == enum)){
-	return "_info_var" ~ T.stringof~toString(t);
+	return "_info_var" ~ T.stringof ~ name_of(t);
 }
 /*
 string toString(E)(E value) if (is(E == enum)) {
