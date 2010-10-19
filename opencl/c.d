@@ -375,25 +375,15 @@ extern(System) {
 	alias int cl_GLint;///
 	alias uint		cl_GLenum;///
 
-	typedef _cl_platform_id * cl_platform_id;///
-	typedef _cl_device_id * cl_device_id;///
-	typedef _cl_context * cl_context;///
-	typedef _cl_command_queue *cl_command_queue;///
-	typedef _cl_mem *cl_mem;///
-	typedef _cl_program * cl_program;///
-	typedef _cl_kernel * cl_kernel;///
-	typedef _cl_event * cl_event;///
-	typedef _cl_sampler * cl_sampler;///
-	//DO NOT DEREFERNCE TO THESE
-	struct _cl_platform_id {};
-	struct _cl_device_id {};
-	struct _cl_context {};
-	struct _cl_command_queue {};
-	struct _cl_mem {};
-	struct _cl_program{};
-	struct _cl_kernel{};
-	struct _cl_event{};
-	struct _cl_sampler{};
+	typedef void * cl_platform_id;///
+	typedef void * cl_device_id;///
+	typedef void * cl_context;///
+	typedef void * cl_command_queue;///
+	typedef void * cl_mem;///
+	typedef void * cl_program;///
+	typedef void * cl_kernel;///
+	typedef void * cl_event;///
+	typedef void * cl_sampler;///
 
 
 	alias cl_uint cl_bool;/// 

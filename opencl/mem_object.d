@@ -11,4 +11,3 @@ class MemObject:CLObject!(cl_mem,MemInfo) {
 		return clGetMemObjectInfo(to!cl_mem(this),e,size,ptr,size_ret);
 	}
 }
-pragma(msg,__traits(allMembers,CLObject!(cl_mem,MemInfo)));
