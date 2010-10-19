@@ -63,7 +63,7 @@ template ExpandGetInfoFunction(string func,T,R...) if(is(T == enum)){
 		string create_function(ReturnType)(T member) {
 			string ret;
 			ret ~= "@property\n";
-			const string member_str = name_of(member);
+			const string member_str = to!string(member);
 			ret ~= ReturnType.stringof ~ " " ~ member_str ~ "(){";
 			//looks like return get_info!(Foo,Bar)(Foo.x,&function_name);
 			ret ~= "return _get_info!("~ReturnType.stringof~","~T.stringof~")("~T.stringof~"."~member_str~",&"~func_name~");}";

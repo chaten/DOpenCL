@@ -1,7 +1,7 @@
 module opencl.conv;
 import std.traits;
 import opencl.cl_object;
-import std.conv: std_to = to;
+static import std.conv;
 template arrayTarget(T:T[]) {
 	alias T arrayTarget;
 }
@@ -16,8 +16,8 @@ template canConstruct(T,A...) if(is(T == class) || is(T == struct)) {
 }
 template to(T) {
 	T to(A...)(A args) { 
-		static if(__traits(compiles,std_to!T(args))) {
-			return std_to!T(args);
+		static if(__traits(compiles,std.conv.to!T(args))){
+			return std.conv.to!T(args);
 		} else {
 			return toImpl!T(args);
 		}

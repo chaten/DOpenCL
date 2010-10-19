@@ -1,5 +1,6 @@
 module opencl.types;
 import opencl.c;
+import std.conv;
 import std.ctype;
 import std.intrinsic;
 import std.string;
@@ -57,9 +58,7 @@ string create_cl_type_enum(string name,string prefix,string [] types...) {
 		}
 	}
 	ret ~= "}\n";
-//	ret ~= create_type_variable(name,c_type);
-//	ret ~= create_type_variable(c_type,name);
-	ret ~= create_enum_to_string_func(name,types);
+	//ret ~= create_enum_to_string_func(name,types);
 	return ret;
 }
 
@@ -86,8 +85,6 @@ string create_cl_type_bitfield(string name,string prefix,string [] types...) {
 	ret ~= c_type ~" opCast(T:"~c_type~")() { return bitfield;}";
 	ret ~= create_bitfield_to_string_func(name,prefix,types);
 	ret ~= "}\n";
-	//ret ~= create_type_variable(name,c_type);
-	//ret ~= create_type_variable(c_type,name);
 	return ret;
 }
 string create_bitfield_to_string_func(string name,string cl_name,string[] types) {
@@ -150,7 +147,7 @@ string create_type_variable(string name,string equals){
 }
 */
 string convert_info_variable(T)(T t) if(is(T == enum)){
-	return "_info_var" ~ T.stringof ~ name_of(t);
+	return "_info_var" ~ T.stringof ~ to!string(t);
 }
 /*
 string toString(E)(E value) if (is(E == enum)) {

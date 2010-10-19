@@ -9,6 +9,7 @@ DST_I = $(addprefix include/,$(addsuffix .di,$(basename $(SRC_I))))
 TST_SRC = $(wildcard test/*.d)
 TST_SRC += $(SRC)
 TST_SRC += $(SRC_I)
+TST_TARGET = bin/test
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 OBJ += $(addprefix build/,$(addsuffix .o,$(basename $(SRC_I))))
 TST_OBJ = $(addprefix test_build/,$(addsuffix .o,$(basename $(TST_SRC))))
@@ -26,9 +27,10 @@ clean:
 	@rm -rfv $(OBJ) $(TARGET) lib include $(TST_OBJ) build docs bin test_build
 docs: $(DOCS)
 
-test: DCFLAGS += -unittest 
-test: $(TST_SRC)
-	$(DC) $(DCFLAGS) $^ -ofbin/test -L-lOpenCL
+test: $(TST_TARGET)
+	@./$(TST_TARGET)
+$(TST_TARGET): $(TST_SRC)
+	$(DC) -unittest $(DCFLAGS) $^ -of$(TST_TARGET) -L-lOpenCL
 $(TARGET): $(SRC)
 	$(DC) -lib $(DCFLAGS) -of$@ $(SRC)
 #	$(DC) -lib $^ -of$@

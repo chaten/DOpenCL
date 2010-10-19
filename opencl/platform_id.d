@@ -35,7 +35,7 @@ unittest {
 	foreach(i,id;ids) {
 		writefln("\nPlatformID[%s]",i);
 		foreach(member;EnumMembers!(PlatformInfo)) {
-			writefln("%s: %s",name_of(member),mixin("id."~name_of(member)));
+			writefln("%s: %s",to!string(member),mixin("id."~to!string(member)));
 		}
 	}
 }

@@ -24,7 +24,7 @@ unittest {
 	foreach(i,id;ids) {
 		writefln("\nDeviceID[%s/%s]",i,ids.length-1);
 		foreach(member;EnumMembers!(DeviceInfo)) {
-			auto val = mixin("id."~name_of(member));
+			auto val = mixin("id."~to!string(member));
 			string print_val;
 			static if(is(typeof(val) == enum) || is(typeof(val) == struct)) {
 				print_val = to!string(val);
@@ -33,7 +33,7 @@ unittest {
 			}else {
 				print_val = to!(string)(val);
 			}
-			writefln("%s: %s",name_of(member),print_val);
+			writefln("%s: %s",to!string(member),print_val);
 		}
 	}
 }
