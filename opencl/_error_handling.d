@@ -6,7 +6,8 @@ void handle_error(cl_int err_code) {
 	switch(e) {
 		case opencl.types.Error.SUCCESS:
 			break;
-		default: 
+		default:
+			//TODO: Create an exception for each type of error
 			throw new Exception(full_name_of(e));
 	}
 }

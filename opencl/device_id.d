@@ -1,27 +1,20 @@
 module opencl.device_id;
-import std.conv;
 import std.traits;
 import std.stdio;
 import opencl.c;
 import opencl.types;
 import opencl._error_handling;
-import opencl._conv;
-import opencl.platform_id;
-import opencl._auto_impl;
-mixin(create_type_variable("_cl_device_id","DeviceID"));
-class DeviceID {
-	cl_device_id _id;
-	cl_device_id cl_type() {
-		return _id;
-	}
+import opencl.conv;
+import opencl.cl_object;
+class DeviceID :CLObject!(cl_device_id,DeviceInfo) {
 	this(cl_device_id id) {
-		_id = id;
+		super(id);
 	}
-	private cl_int device_info(DeviceInfo e,size_t size,void * ptr,size_t * size_ret) {
-		return clGetDeviceInfo(convert(this),convert(e),size,ptr,size_ret);
+	override cl_int get_info(DeviceInfo e,size_t size,void * ptr,size_t * size_ret) {
+		return clGetDeviceInfo(to!cl_device_id(this),e,size,ptr,size_ret);
 	}
-	mixin(ExpandGetInfoFunction!(DeviceInfo,"device_info")());
 }
+version(unittest) { import opencl.platform_id;}
 
 unittest {
 	writeln("Running DeviceID tests");
@@ -34,7 +27,7 @@ unittest {
 			auto val = mixin("id."~name_of(member));
 			string print_val;
 			static if(is(typeof(val) == enum) || is(typeof(val) == struct)) {
-				print_val = name_of(val);
+				print_val = to!string(val);
 			} else static if(is(typeof(val) == PlatformID)) {
 				print_val = val.NAME();
 			}else {

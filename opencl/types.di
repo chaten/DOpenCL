@@ -5,6 +5,7 @@ import std.intrinsic;
 import std.string;
 import std.typecons;
 import std.typetuple;
+//import opencl.conv;
 private alias CL_DRIVER_VERSION CL_DEVICE_DRIVER_VERSION;
 mixin(create_declarations());
 private {
@@ -56,8 +57,8 @@ string create_cl_type_enum(string name,string prefix,string [] types...) {
 		}
 	}
 	ret ~= "}\n";
-	ret ~= create_type_variable(name,c_type);
-	ret ~= create_type_variable(c_type,name);
+//	ret ~= create_type_variable(name,c_type);
+//	ret ~= create_type_variable(c_type,name);
 	ret ~= create_enum_to_string_func(name,types);
 	return ret;
 }
@@ -72,7 +73,7 @@ string create_cl_type_bitfield(string name,string prefix,string [] types...) {
 	ret ~= "struct "~name~"{\n";
 	ret ~= "private "~c_type~" bitfield;\n";
 	ret ~= "this("~c_type~" value) { bitfield = value;}";
-	ret ~= c_type ~" cl_type() { return bitfield;}";
+	ret ~= c_type ~" clId() { return bitfield;}";
 	foreach(i,type;types) {
 		ret ~= "@property\n";
 		ret ~= "static "~name~" "~type~"() { return "~name~"("~cl_types[i]~");}\n";
@@ -82,33 +83,35 @@ string create_cl_type_bitfield(string name,string prefix,string [] types...) {
 			ret ~= "return (bitfield & "~cl_types[i]~") > 0;}";
 		}
 	}
-	ret ~= "}\n";
-	ret ~= create_type_variable(name,c_type);
-	ret ~= create_type_variable(c_type,name);
+	ret ~= c_type ~" opCast(T:"~c_type~")() { return bitfield;}";
 	ret ~= create_bitfield_to_string_func(name,prefix,types);
+	ret ~= "}\n";
+	//ret ~= create_type_variable(name,c_type);
+	//ret ~= create_type_variable(c_type,name);
 	return ret;
 }
 string create_bitfield_to_string_func(string name,string cl_name,string[] types) {
 	string ret;
-	ret ~= "string name_of("~name~" bitfield) {";
+	ret ~= "string toString() {";
 	ret ~= "string ret;";
-	ret ~= d_type_to_c_type(name) ~ " value = bitfield.cl_type();";
+	ret ~= "auto value = clId();";
 	foreach(type;types) {
 		if(type == "ALL" || type == "NONE") {
-			ret ~= "if(bitfield.is"~type~") return \""~type~"\";\n";
+			ret ~= "if(is"~type~") return \""~type~"\";\n";
 		} else {
-			ret ~= "if(bitfield.is"~type~") ret ~= \""~type~"|\";\n";
+			ret ~= "if(is"~type~") ret ~= \""~type~"|\";\n";
 		}
 	}
 	//Remove the last | symbol
 	ret ~= "if(ret.length > 0) return ret[0..ret.length-1];";
 	ret ~= "else return ret;";
 	ret ~= "}";
-	ret ~= "string full_name_of("~name~" value) {";
-	ret ~= "return \""~name~".(\"~name_of(value)~\")\";";
+	ret ~= "string cannonicalString("~name~" value) {";
+	ret ~= "return \""~name~".(\"~value.toString()~\")\";";
 	ret ~= "}";
 	return ret;
 }
+
 string create_enum_to_string_func(string name,string[] types) {
 	string ret;
 	ret ~= "string name_of("~name~" value) {";
@@ -138,12 +141,14 @@ string map_info_enum_to_type(E)(E value,string type) if(is(E == enum)) {
 	return ret;
 }
 }//END PRIVATE
+/*
 string convert_types_variable(string name) {
 	return "_types_var_" ~ name;
 }
 string create_type_variable(string name,string equals){ 
 	return "const string "~convert_types_variable(name)~" = \"" ~ equals ~ "\";";
 }
+*/
 string convert_info_variable(T)(T t) if(is(T == enum)){
 	return "_info_var" ~ T.stringof ~ name_of(t);
 }
@@ -192,7 +197,7 @@ mixin(create_cl_type_enum("ChannelType","CL","SNORM_INT8","SNORM_INT16","UNORM_I
 mixin(create_cl_type_enum("MemObjectType","CL_MEM_OBJECT","BUFFER","IMAGE2D","IMAGE3D"));
 
 mixin(create_cl_type_enum("MemInfo","CL_MEM","TYPE","FLAGS","SIZE","HOST_PTR","MAP_COUNT","REFERENCE_COUNT","CONTEXT","ASSOCIATED_MEMOBJECT","OFFSET"));
-mixin(map_info_enums_to_types([MemInfo.TYPE:"MemObjectType",MemInfo.FLAGS:"MemFlags",MemInfo.SIZE:"size_t",MemInfo.HOST_PTR:"void *",MemInfo.MAP_COUNT:"cl_uint",MemInfo.REFERENCE_COUNT:"cl_uint",MemInfo.CONTEXT:"Context"]));
+mixin(map_info_enums_to_types([MemInfo.TYPE:"MemObjectType",MemInfo.FLAGS:"MemFlags",MemInfo.SIZE:"size_t",MemInfo.HOST_PTR:"void *",MemInfo.MAP_COUNT:"cl_uint",MemInfo.REFERENCE_COUNT:"cl_uint",MemInfo.CONTEXT:"Context",MemInfo.ASSOCIATED_MEMOBJECT:"MemObject",MemInfo.OFFSET:"size_t"]));
 
 mixin(create_cl_type_enum("ImageInfo","CL_IMAGE","FORMAT","ELEMENT_SIZE","ROW_PITCH","SLICE_PITCH","WIDTH","HEIGHT","DEPTH"));
 mixin(map_info_enums_to_types([ImageInfo.FORMAT:"ImageFormat",ImageInfo.ELEMENT_SIZE:"size_t",ImageInfo.ROW_PITCH:"size_t",ImageInfo.SLICE_PITCH:"size_t",ImageInfo.WIDTH:"size_t",ImageInfo.HEIGHT:"size_t",ImageInfo.DEPTH:"size_t"]));

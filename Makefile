@@ -1,5 +1,5 @@
 DC = dmd
-DCFLAGS = -w -wi 
+DCFLAGS = -w -wi -gc
 INSTALL_PATH = /usr
 LIBNAME = opencl
 TARGET = lib/lib$(LIBNAME)_d.a
@@ -7,11 +7,11 @@ SRC = $(wildcard $(LIBNAME)/*.d)
 SRC_I = $(wildcard $(LIBNAME)/*.di)
 DST_I = $(addprefix include/,$(addsuffix .di,$(basename $(SRC_I))))
 TST_SRC = $(wildcard test/*.d)
+TST_SRC += $(SRC)
+TST_SRC += $(SRC_I)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 OBJ += $(addprefix build/,$(addsuffix .o,$(basename $(SRC_I))))
 TST_OBJ = $(addprefix test_build/,$(addsuffix .o,$(basename $(TST_SRC))))
-TST_OBJ += $(addprefix test_build/,$(addsuffix .o,$(basename $(SRC))))
-TST_OBJ += $(addprefix test_build/,$(addsuffix .o,$(basename $(SRC_I))))
 DOCS = $(addprefix docs/,$(addsuffix .md,$(basename $(SRC))))
 .PHONY: clean uninstall all install test docs build
 all: build
@@ -27,10 +27,11 @@ clean:
 docs: $(DOCS)
 
 test: DCFLAGS += -unittest 
-test: $(TST_OBJ)
-	$(DC) $^ -ofbin/test -L-lOpenCL
-$(TARGET): $(OBJ)
-	$(DC) -lib $^ -of$@
+test: $(TST_SRC)
+	$(DC) $(DCFLAGS) $^ -ofbin/test -L-lOpenCL
+$(TARGET): $(SRC)
+	$(DC) -lib $(DCFLAGS) -of$@ $(SRC)
+#	$(DC) -lib $^ -of$@
 build/%.o: %.d
 	$(DC) -c $(DCFLAGS) $< -of$@ -Hfinclude/$(basename $<).di
 build/%.o: %.di
@@ -42,4 +43,5 @@ test_build/%.o: %.di
 docs/%.md: %.d
 	$(DC) -o- $< -Df$@ markdown.ddoc
 include/%.di: %.di
+	@mkdir -p include/$(LIBNAME)
 	@cp -v $^ $@

@@ -15,7 +15,7 @@
 */
 module opencl.c;///
 extern(System) {
-	enum {
+	enum : cl_int {
 		CL_SUCCESS = 0,
 		CL_DEVICE_NOT_FOUND = -1,
 		CL_DEVICE_NOT_AVAILABLE = -2,
@@ -375,15 +375,15 @@ extern(System) {
 	alias int cl_GLint;///
 	alias uint		cl_GLenum;///
 
-	alias _cl_platform_id * cl_platform_id;///
-	alias _cl_device_id * cl_device_id;///
-	alias _cl_context * cl_context;///
-	alias _cl_command_queue *cl_command_queue;///
-	alias _cl_mem *cl_mem;///
-	alias _cl_program *cl_program;///
-	alias _cl_kernel *cl_kernel;///
-	alias _cl_event *cl_event;///
-	alias _cl_sampler *cl_sampler;///
+	typedef _cl_platform_id * cl_platform_id;///
+	typedef _cl_device_id * cl_device_id;///
+	typedef _cl_context * cl_context;///
+	typedef _cl_command_queue *cl_command_queue;///
+	typedef _cl_mem *cl_mem;///
+	typedef _cl_program * cl_program;///
+	typedef _cl_kernel * cl_kernel;///
+	typedef _cl_event * cl_event;///
+	typedef _cl_sampler * cl_sampler;///
 	//DO NOT DEREFERNCE TO THESE
 	struct _cl_platform_id {};
 	struct _cl_device_id {};

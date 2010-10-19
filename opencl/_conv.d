@@ -4,9 +4,21 @@ import opencl.types;
 import opencl.c;
 import opencl.platform_id;
 import opencl.device_id;
-import std.stdio;
+import opencl.context;
+import opencl.mem_object;
+import opencl.command_queue;
+import opencl.program;
+import opencl.kernel;
+import opencl.image_format;
+/*
 template arrayTarget(T:T[]) {
 	alias T arrayTarget;
+}
+template to(T) {
+	T to(A...)(A args) { return toImpl!T(args);}
+}
+T toImpl(T,S)(S source) if({
+
 }
 auto convert(T)(T value) if(!isArray!(T)) {
 	return _convertImpl!T(value);
@@ -41,6 +53,7 @@ private {
 			alias typeof(val) Type;
 			return lambda!(T,Type)(value);
 		} else {
+			pragma(msg,T.stringof);
 			const string type = mixin(convert_types_variable(T.stringof));
 			mixin(type ~ " val = void;");
 			alias typeof(val) Type;
@@ -49,3 +62,4 @@ private {
 		}
 	}
 }
+*/
