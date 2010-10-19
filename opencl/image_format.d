@@ -3,11 +3,17 @@ import opencl.c;
 import opencl.types;
 import opencl.conv;
 
-class ImageFormat {
+struct ImageFormat {
 	ChannelOrder image_channel_order;
 	ChannelType image_channel_data_type;
 	this(cl_image_format format){ 
 		image_channel_order = to!ChannelOrder(format.image_channel_order);
 		image_channel_data_type = to!ChannelType(format.image_channel_data_type);
+	}
+	cl_image_format opCast() {
+		cl_image_format ret;
+		ret.image_channel_order = to!cl_channel_order(image_channel_order);
+		ret.image_channel_data_type = to!cl_channel_type(image_channel_data_type);
+		return ret;
 	}
 }

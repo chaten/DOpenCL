@@ -109,22 +109,6 @@ string create_bitfield_to_string_func(string name,string cl_name,string[] types)
 	return ret;
 }
 
-string create_enum_to_string_func(string name,string[] types) {
-	string ret;
-	ret ~= "string name_of("~name~" value) {";
-	ret ~= "final switch (value) {";
-	foreach(type;types) {
-		ret ~= "case "~name~"."~type~": return \""~type~"\";\n";
-	}
-	ret ~= "}}";
-	ret ~= "string full_name_of("~name~" value) {";
-	ret ~= "final switch (value) {";
-	foreach(type;types) {
-		ret ~= "case "~name~"."~type~": return \""~name~"."~type~"\";\n";
-	}
-	ret ~= "}}";
-	return ret;
-}
 string map_info_enums_to_types(E)(string[E] types) if(is(E == enum)) {
 	string ret;
 	foreach(key;types.keys) {

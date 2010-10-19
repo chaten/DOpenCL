@@ -1,8 +1,8 @@
 module opencl.image2d;
-import opencl.mem_object;
+import opencl.image;
 import opencl.types;
 import opencl.c;
-class Image2D : MemObject {
+class Image2D : Image {
 	this(cl_mem mem) {
 		super(mem);
 		MemObjectType type = this.TYPE();

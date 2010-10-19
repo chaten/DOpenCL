@@ -27,7 +27,7 @@ template arrayTarget(T:T[]) {
 		alias typeof(arrayTarget!A._cl_id) T;
 		return to!A(_get_info!(T[],E)(e,info));
 	}
-	A _get_info(A,E)(E e,cl_int delegate(E,size_t,void*,size_t *)info) if(!isArray!A && is(A == class)) {
+	A _get_info(A,E)(E e,cl_int delegate(E,size_t,void*,size_t *)info) if(!isArray!A && is(A == class) && hasMember!(A,"_cl_id")) {
 		alias typeof(A._cl_id) B;
 		return to!A(_get_info!(B,E)(e,info));
 	}
