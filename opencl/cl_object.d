@@ -11,6 +11,10 @@ class CLObject(CLType,InfoTypes...) if(InfoTypes.length >= 1){
 	this(CLType cl_id) {
 		_cl_id = cl_id;
 	}
+	~this(){ 
+		release();
+	}
+	protected abstract cl_int release();
 	private final static string create_abstract_get_infos() {
 		string ret;
 		foreach(type;InfoTypes) {

@@ -10,6 +10,9 @@ class DeviceID :CLObject!(cl_device_id,DeviceInfo) {
 	this(cl_device_id id) {
 		super(id);
 	}
+	override cl_int release() {
+		return opencl.types.Error.SUCCESS;
+	}
 	override cl_int get_info(DeviceInfo e,size_t size,void * ptr,size_t * size_ret) {
 		return clGetDeviceInfo(to!cl_device_id(this),e,size,ptr,size_ret);
 	}

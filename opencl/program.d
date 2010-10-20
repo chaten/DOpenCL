@@ -10,4 +10,7 @@ class Program :CLObject!(cl_program,ProgramInfo){
 	override cl_int get_info(ProgramInfo e,size_t size,void * ptr,size_t * size_ret) {
 		return clGetProgramInfo(to!(cl_program)(this),e,size,ptr,size_ret);
 	}
+	override cl_int release() { 
+		return clReleaseProgram(to!(cl_program)(this));
+	}
 }

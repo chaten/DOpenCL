@@ -18,8 +18,8 @@ class Context:CLObject!(cl_context,ContextInfo) {
 		handle_error(err_code);
 		this(context);
 	}
-	~this() {
-		handle_error(clReleaseContext(_cl_id));
+	override cl_int release() {
+		return clReleaseContext(to!cl_context(this));
 	}
 	override cl_int get_info(ContextInfo c,size_t size,void * ptr,size_t * size_ret) {
 		return clGetContextInfo(to!cl_context(this),c,size,ptr,size_ret);
