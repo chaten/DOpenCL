@@ -83,6 +83,7 @@ string create_cl_type_bitfield(string name,string prefix,string [] types...) {
 		}
 	}
 	ret ~= c_type ~" opCast(T:"~c_type~")() { return bitfield;}";
+	ret ~= name ~" opBinary(string op)(const "~name~" other) if (op == \"|\") { return "~name~"(bitfield | other.bitfield);}";
 	ret ~= create_bitfield_to_string_func(name,prefix,types);
 	ret ~= "}\n";
 	return ret;
