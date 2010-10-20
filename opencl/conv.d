@@ -23,10 +23,10 @@ template to(T) {
 		}
 	}
 }
-T toImpl(T,S)(S source) if(is(S == struct) && S.sizeof == T.sizeof) {
+T toImpl(T,S)(S source) if(is(S == struct) && isIntegral!T && S.sizeof == T.sizeof) {
 	return cast(T)source;
 }
-T toImpl(T,S)(S source) if(is(T == struct) && canConstruct!(T,S)) {
+T toImpl(T,S)(S source) if(is(T == struct) && canConstruct!(T,S)(S.init)) {
 	return T(source);
 }
 T toImpl(T,S)(S source) if(isImplicitlyConvertible!(T,S)) {
