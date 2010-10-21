@@ -31,7 +31,7 @@ docs: $(DOCS)
 
 test: $(TST_TARGET)
 $(TST_TARGET): $(TST_SRC) $(TST_KERNELS)
-	$(DC) -J$(TST_KERNEL_DIR) -unittest $(DCFLAGS) $(TST_SRC) -of$(TST_TARGET) -L-lOpenCL
+	$(DC) -J$(TST_KERNEL_DIR) -unittest $(DCFLAGS) $(TST_SRC) -of$(TST_TARGET) -L-ldl
 $(TARGET): $(SRC)
 	$(DC) -lib $(DCFLAGS) -of$@ $(SRC)
 #	$(DC) -lib $^ -of$@
