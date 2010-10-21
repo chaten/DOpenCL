@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "opencl", "opencl.visualdproj", "{3C065087-018F-47D1-82CE-40F089D602E6}"
+EndProject
+Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "test", "test.visualdproj", "{D06F33A2-00EC-4457-83D2-089FBEFE7E0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3C065087-018F-47D1-82CE-40F089D602E6} = {3C065087-018F-47D1-82CE-40F089D602E6}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C065087-018F-47D1-82CE-40F089D602E6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3C065087-018F-47D1-82CE-40F089D602E6}.Debug|Win32.Build.0 = Debug|Win32
+		{3C065087-018F-47D1-82CE-40F089D602E6}.Release|Win32.ActiveCfg = Release|Win32
+		{3C065087-018F-47D1-82CE-40F089D602E6}.Release|Win32.Build.0 = Release|Win32
+		{D06F33A2-00EC-4457-83D2-089FBEFE7E0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D06F33A2-00EC-4457-83D2-089FBEFE7E0C}.Debug|Win32.Build.0 = Debug|Win32
+		{D06F33A2-00EC-4457-83D2-089FBEFE7E0C}.Release|Win32.ActiveCfg = Release|Win32
+		{D06F33A2-00EC-4457-83D2-089FBEFE7E0C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
