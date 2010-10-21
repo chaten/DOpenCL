@@ -50,7 +50,7 @@ unittest {
 	k.setArg(0,input);
 	k.setArg(1,output);
 	Event run = queue.enqueueNDRangeKernel(k,[DATA_SIZE]);
-	Event read = queue.enqueueReadBuffer(output,false,0,DATA_SIZE*float.sizeof,results.ptr,[run]);
+	Event read = queue.enqueueReadBuffer(output,false,0,results,[run]);
 	waitForEvents([run,read]);
 	uint correct = 0;
 	foreach(i,result;results) {
@@ -65,14 +65,15 @@ template arrayTarget(T:T[]) {
 unittest {
 	const uint count = 1024^^2;
 	const uint iterations = 100;
-	const uint max_groups = 64;
-	const uint max_work_items = 64;
 	const double min_error = 1e-7;
 	string src = import("sample3.clc");
 	PlatformID[] ids = PlatformID.all();
 	Context ctx = new Context(ids[0],ids[0].devices());
-	CommandQueue queue = ctx.createCommandQueue(ctx.devices()[0]);
-	const uint max_workgroup_size = ids[0].devices()[0].max_work_group_size();
+	DeviceID device = ctx.devices()[0];
+	CommandQueue queue = ctx.createCommandQueue(device);
+	const uint max_workgroup_size = device.max_work_group_size();
+	const uint max_groups = 64;
+	const uint max_work_items = 64;
 	void reduce(Type,uint channel)() {
 		string type;
 		static if(!isArray!Type) {
@@ -139,7 +140,6 @@ unittest {
 		}
 		queue.finish();
 		//Start the timing loop and execute the kernel over several iterations
-		writeln();
 		writefln("Timing %d iterations of reduction with %d elements of type %s...",iterations,count,Type.stringof);
 		void reduce() {
 			for(int j = 0;j< iterations;j++) {
@@ -207,5 +207,8 @@ unittest {
 	scope(failure) { writeln("Sample 3 Failed");}
 	reduce!(int,1);
 	reduce!(int2,2);
-	reduce!(int4,4);	
+	reduce!(int4,4);
+	reduce!(float,1);
+	reduce!(float2,2);
+	reduce!(float4,4);
 }

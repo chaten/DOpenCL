@@ -413,3 +413,364 @@ kernel void reduce_int(
         STORE_GLOBAL_I1(output, group_id, v);
     }        
 }
+
+ 
+#define LOAD_GLOBAL_F1(s, i) \
+    ((__global const float*)(s))[(size_t)(i)]
+ 
+#define STORE_GLOBAL_F1(s, i, v) \
+    ((__global float*)(s))[(size_t)(i)] = (v)
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+#define LOAD_LOCAL_F1(s, i) \
+    ((__local float*)(s))[(size_t)(i)]
+ 
+#define STORE_LOCAL_F1(s, i, v) \
+    ((__local float*)(s))[(size_t)(i)] = (v)
+ 
+#define ACCUM_LOCAL_F1(s, i, j) \
+{ \
+    float x = ((__local float*)(s))[(size_t)(i)]; \
+    float y = ((__local float*)(s))[(size_t)(j)]; \
+    ((__local float*)(s))[(size_t)(i)] = (x + y); \
+}
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+__kernel void
+reduce_float(
+    __global float *output, 
+    __global const float *input, 
+    __local float *shared,
+    const unsigned int n)
+{
+    const float zero = 0.0f;
+    const unsigned int group_id = get_global_id(0) / get_local_size(0);
+    const unsigned int group_size = GROUP_SIZE;
+    const unsigned int group_stride = 2 * group_size;
+    const size_t local_stride = group_stride * group_size; 
+    
+    unsigned int op = 0;
+    unsigned int last = OPERATIONS - 1;
+    for(op = 0; op < OPERATIONS; op++)
+    {
+        const unsigned int offset = (last - op);
+        const size_t local_id = get_local_id(0) + offset;
+ 
+        STORE_LOCAL_F1(shared, local_id, zero);
+        
+        size_t i = group_id * group_stride + local_id; 
+        while (i < n)
+        {
+            float a = LOAD_GLOBAL_F1(input, i);
+            float b = LOAD_GLOBAL_F1(input, i + group_size);
+            float s = LOAD_LOCAL_F1(shared, local_id);
+            STORE_LOCAL_F1(shared, local_id, (a + b + s));
+            i += local_stride;
+        } 
+        
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 512) 
+        if (local_id < 256) { ACCUM_LOCAL_F1(shared, local_id, local_id + 256); }
+    #endif
+        
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 256) 
+        if (local_id < 128) { ACCUM_LOCAL_F1(shared, local_id, local_id + 128); }
+    #endif    
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 128) 
+        if (local_id <  64) { ACCUM_LOCAL_F1(shared, local_id, local_id +  64); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 64) 
+        if (local_id <  32) { ACCUM_LOCAL_F1(shared, local_id, local_id +  32); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 32) 
+        if (local_id <  16) { ACCUM_LOCAL_F1(shared, local_id, local_id +  16); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 16) 
+        if (local_id <   8) { ACCUM_LOCAL_F1(shared, local_id, local_id +   8); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 8) 
+        if (local_id <   4) { ACCUM_LOCAL_F1(shared, local_id, local_id +   4); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 4) 
+        if (local_id <   2) { ACCUM_LOCAL_F1(shared, local_id, local_id +   2); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 2) 
+        if (local_id <   1) { ACCUM_LOCAL_F1(shared, local_id, local_id +   1); }
+    #endif
+ 
+    }
+ 
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if (get_local_id(0) == 0)
+    {
+        float v = LOAD_LOCAL_F1(shared, 0);
+        STORE_GLOBAL_F1(output, group_id, v);
+    }        
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+#define GROUP_SIZE_2 (GROUP_SIZE + GROUP_SIZE)
+#define GROUP_SIZE_3 (GROUP_SIZE_2 + GROUP_SIZE)
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+#define LOAD_GLOBAL_F4(s, i) \
+    vload4((size_t)(i), (__global const float*)(s))
+ 
+#define STORE_GLOBAL_F4(s, i, v) \
+    vstore4((v), (size_t)(i), (__global float*)(s))
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+#define LOAD_LOCAL_F1(s, i) \
+    ((__local const float*)(s))[(size_t)(i)]
+ 
+#define STORE_LOCAL_F1(s, i, v) \
+    ((__local float*)(s))[(size_t)(i)] = (v)
+ 
+#define LOAD_LOCAL_F4(s, i) \
+    (float4)( (LOAD_LOCAL_F1(s, i               )), \
+                 (LOAD_LOCAL_F1(s, i + GROUP_SIZE  )), \
+                 (LOAD_LOCAL_F1(s, i + GROUP_SIZE_2)), \
+                 (LOAD_LOCAL_F1(s, i + GROUP_SIZE_3)))
+ 
+#define STORE_LOCAL_F4(s, i, v) \
+    STORE_LOCAL_F1(s, i,                (v).s0); \
+    STORE_LOCAL_F1(s, i + GROUP_SIZE,   (v).s1); \
+    STORE_LOCAL_F1(s, i + GROUP_SIZE_2, (v).s2); \
+    STORE_LOCAL_F1(s, i + GROUP_SIZE_3, (v).s3)
+ 
+#define ACCUM_LOCAL_F4(s, i, j) \
+{ \
+    float4 x = LOAD_LOCAL_F4(s, i); \
+    float4 y = LOAD_LOCAL_F4(s, j); \
+    float4 xy = x + y; \
+    STORE_LOCAL_F4(s, i, xy); \
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+__kernel void
+reduce_float4(
+    __global float4 *output, 
+    __global const float4 *input, 
+    __local float4 *shared,
+    const unsigned int n)
+{
+    const float4 zero = (float4)(0.0f, 0.0f, 0.0f, 0.0f);
+    const unsigned int group_id = get_global_id(0) / get_local_size(0);
+    const unsigned int group_size = GROUP_SIZE;
+    const unsigned int group_stride = 2 * group_size;
+    const size_t local_stride = group_stride * group_size; 
+    
+    unsigned int op = 0;
+    unsigned int last = OPERATIONS - 1;
+    for(op = 0; op < OPERATIONS; op++)
+    {
+        const unsigned int offset = (last - op);
+        const size_t local_id = get_local_id(0) + offset;
+ 
+        STORE_LOCAL_F4(shared, local_id, zero);
+        
+        size_t i = group_id * group_stride + local_id; 
+        while (i < n)
+        {
+            float4 a = LOAD_GLOBAL_F4(input, i);
+            float4 b = LOAD_GLOBAL_F4(input, i + group_size);
+            float4 s = LOAD_LOCAL_F4(shared, local_id);
+            STORE_LOCAL_F4(shared, local_id, (a + b + s));
+            i += local_stride;
+        } 
+    
+    barrier(CLK_LOCAL_MEM_FENCE);       
+    #if (GROUP_SIZE >= 512) 
+        if (local_id < 256) { ACCUM_LOCAL_F4(shared, local_id, local_id + 256); }
+    #endif
+        
+    barrier(CLK_LOCAL_MEM_FENCE);   
+    #if (GROUP_SIZE >= 256) 
+        if (local_id < 128) { ACCUM_LOCAL_F4(shared, local_id, local_id + 128); }
+    #endif    
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 128) 
+        if (local_id <  64) { ACCUM_LOCAL_F4(shared, local_id, local_id +  64); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 64) 
+        if (local_id <  32) { ACCUM_LOCAL_F4(shared, local_id, local_id +  32); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 32) 
+        if (local_id <  16) { ACCUM_LOCAL_F4(shared, local_id, local_id +  16); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 16) 
+        if (local_id <   8) { ACCUM_LOCAL_F4(shared, local_id, local_id +   8); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 8) 
+        if (local_id <   4) { ACCUM_LOCAL_F4(shared, local_id, local_id +   4); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 4) 
+        if (local_id <   2) { ACCUM_LOCAL_F4(shared, local_id, local_id +   2); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 2) 
+        if (local_id <   1) { ACCUM_LOCAL_F4(shared, local_id, local_id +   1); } 
+    #endif
+ 
+    }
+ 
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if (get_local_id(0) == 0)
+    {
+        float4 v = LOAD_LOCAL_F4(shared, 0);
+        STORE_GLOBAL_F4(output, group_id, v);
+    }        
+}
+
+
+ 
+#define LOAD_GLOBAL_F2(s, i) \
+    vload2((size_t)(i), (__global const float*)(s))
+ 
+#define STORE_GLOBAL_F2(s, i, v) \
+    vstore2((v), (size_t)(i), (__global float*)(s))
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+#define LOAD_LOCAL_F1(s, i) \
+    ((__local const float*)(s))[(size_t)(i)]
+ 
+#define STORE_LOCAL_F1(s, i, v) \
+    ((__local float*)(s))[(size_t)(i)] = (v)
+ 
+#define LOAD_LOCAL_F2(s, i) \
+    (float2)( (LOAD_LOCAL_F1(s, i)), \
+                 (LOAD_LOCAL_F1(s, i + GROUP_SIZE)))
+ 
+#define STORE_LOCAL_F2(s, i, v) \
+    STORE_LOCAL_F1(s, i, (v).s0); \
+    STORE_LOCAL_F1(s, i + GROUP_SIZE, (v).s1)
+ 
+#define ACCUM_LOCAL_F2(s, i, j) \
+{ \
+    float2 x = LOAD_LOCAL_F2(s, i); \
+    float2 y = LOAD_LOCAL_F2(s, j); \
+    float2 xy = (x + y); \
+    STORE_LOCAL_F2(s, i, xy); \
+}
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+ 
+__kernel void
+reduce_float2(
+    __global float2 *output, 
+    __global const float2 *input, 
+    __local float2 *shared,
+    const unsigned int n)
+{
+    const float2 zero = (float2)(0.0f, 0.0f);
+    const unsigned int group_id = get_global_id(0) / get_local_size(0);
+    const unsigned int group_size = GROUP_SIZE;
+    const unsigned int group_stride = 2 * group_size;
+    const size_t local_stride = group_stride * group_size; 
+    
+    unsigned int op = 0;
+    unsigned int last = OPERATIONS - 1;
+    for(op = 0; op < OPERATIONS; op++)
+    {
+        const unsigned int offset = (last - op);
+        const size_t local_id = get_local_id(0) + offset;
+ 
+        STORE_LOCAL_F2(shared, local_id, zero);
+        
+        size_t i = group_id * group_stride + local_id; 
+        while (i < n)
+        {
+            float2 a = LOAD_GLOBAL_F2(input, i);
+            float2 b = LOAD_GLOBAL_F2(input, i + group_size);
+            float2 s = LOAD_LOCAL_F2(shared, local_id);
+            STORE_LOCAL_F2(shared, local_id, (a + b + s));
+            i += local_stride;
+        } 
+        
+    barrier(CLK_LOCAL_MEM_FENCE);   
+    #if (GROUP_SIZE >= 512) 
+        if (local_id < 256) { ACCUM_LOCAL_F2(shared, local_id, local_id + 256); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);    
+    #if (GROUP_SIZE >= 256) 
+        if (local_id < 128) { ACCUM_LOCAL_F2(shared, local_id, local_id + 128); }
+    #endif    
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 128) 
+        if (local_id <  64) { ACCUM_LOCAL_F2(shared, local_id, local_id +  64); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 64) 
+        if (local_id <  32) { ACCUM_LOCAL_F2(shared, local_id, local_id +  32); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 32) 
+        if (local_id <  16) { ACCUM_LOCAL_F2(shared, local_id, local_id +  16); }
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 16) 
+        if (local_id <   8) { ACCUM_LOCAL_F2(shared, local_id, local_id +   8); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 8) 
+        if (local_id <   4) { ACCUM_LOCAL_F2(shared, local_id, local_id +   4); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 4) 
+        if (local_id <   2) { ACCUM_LOCAL_F2(shared, local_id, local_id +   2); } 
+    #endif
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    #if (GROUP_SIZE >= 2) 
+        if (local_id <   1) { ACCUM_LOCAL_F2(shared, local_id, local_id +   1); } 
+    #endif
+ 
+    }
+ 
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if (get_local_id(0) == 0)
+    {
+        float2 v = LOAD_LOCAL_F2(shared, 0);
+        STORE_GLOBAL_F2(output, group_id, v);
+    }        
+}

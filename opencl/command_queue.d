@@ -11,6 +11,7 @@ import opencl.event;
 import opencl.buffer;
 import opencl.mem_object;
 import opencl.device_id;
+import std.traits;
 import opencl._error_handling;
 class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 	this(cl_command_queue queue) {
@@ -62,15 +63,23 @@ class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 	void flush() { 
 		handle_error(clFlush(to!cl_command_queue(this)));
 	}
-	Event enqueueReadBuffer(Buffer b,bool blocking_read,size_t offset,size_t size,void * ptr,Event[] wait_list = null) {
+	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,size_t size,T ptr,Event[] wait_list = null) if(isPointer!(T)){
 		cl_event event_ret;
 		handle_error(clEnqueueReadBuffer(to!cl_command_queue(this),to!cl_mem(b),blocking_read,offset,size,ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
 	}
-	Event enqueueWriteBuffer(Buffer b,bool blocking_write,size_t offset,size_t size,void * ptr,Event[] wait_list = null) {
+	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,T array,Event[] wait_list = null) if(isArray!T){
+		alias arrayTarget!T Target;
+		return enqueueReadBuffer(b,blocking_read,offset,array.length*Target.sizeof,array.ptr,wait_list);
+	}
+	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,size_t size,T ptr,Event[] wait_list = null)if(isPointer!T) {
 		cl_event event_ret;
 		handle_error(clEnqueueWriteBuffer(to!cl_command_queue(this),to!cl_mem(b),blocking_write,offset,size,ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
+	}
+	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,T array,Event[] wait_list= null) if(isArray!T) {
+		alias arrayTarget!T Target;
+		return enqueueWriteBuffer(b,blocking_write,offset,array.length*Target.sizeof,array.ptr,wait_list);
 	}
 	Event enqueueCopyBuffer(Buffer src,Buffer dest,size_t src_offset,size_t dst_offset,size_t size,Event[] wait_list = null) {
 		cl_event event_ret;
