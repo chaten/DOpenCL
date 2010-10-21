@@ -10,3 +10,4 @@ public import opencl.kernel;
 public import opencl.mem_object;
 public import opencl.context;
 public import opencl.types;
+public import opencl.event;

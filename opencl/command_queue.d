@@ -10,10 +10,17 @@ import opencl.image;
 import opencl.event;
 import opencl.buffer;
 import opencl.mem_object;
+import opencl.device_id;
 import opencl._error_handling;
 class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 	this(cl_command_queue queue) {
 		super(queue);
+	}
+	this(Context ctx,DeviceID id,CommandQueueProperties properties = CommandQueueProperties(0uL)) {
+		cl_int err_code;
+		cl_command_queue queue = clCreateCommandQueue(to!cl_context(ctx),to!cl_device_id(id),to!cl_command_queue_properties(properties),&err_code);
+		handle_error(err_code);
+		this(queue);
 	}
 	override cl_int get_info(CommandQueueInfo e,size_t size,void * ptr,size_t * size_ret) {
 		return clGetCommandQueueInfo(to!(cl_command_queue)(this),e,size,ptr,size_ret);
@@ -21,14 +28,15 @@ class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 	override cl_int release() {
 		return clReleaseCommandQueue(to!cl_command_queue(this));
 	}
-	Event enqueueNDRangeKernel(Kernel kernel,Event[] wait_list,const size_t [] global_work_size,const size_t [] local_work_size = null,const size_t[] global_work_offset = null) in {
+	Event enqueueNDRangeKernel(Kernel kernel,const size_t [] global_work_size,const size_t [] local_work_size = null,const size_t[] global_work_offset = null,Event[] wait_list = null) in {
 		if(local_work_size != null)
 			assert(global_work_size.length == local_work_size.length);
 		if(global_work_offset != null) //As of OpenCL 1.1, it is invalid for the offset to be anything but null.
+						//But it works on AMD's platform
 			assert(global_work_size.length == global_work_offset.length);
 	} body { 
 		cl_event event_ret;
-		handle_error(clEnqueueNDRangeKernel(to!cl_command_queue(this),to!cl_kernel(kernel),global_work_size.length,global_work_size.ptr,local_work_size.ptr,global_work_offset.ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
+		handle_error(clEnqueueNDRangeKernel(to!cl_command_queue(this),to!cl_kernel(kernel),global_work_size.length,global_work_offset.ptr,global_work_size.ptr,local_work_size.ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
 	}
 	Event enqueueTask(Kernel kernel,Event[] wait_list = null) {

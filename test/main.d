@@ -1,4 +1,5 @@
 import std.stdio;
-void main() { 
-  writefln("Tests ran succesfully");
+import test.samples;
+void main() {
+	writefln("Tests ran succesfully");
 }

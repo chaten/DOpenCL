@@ -10,6 +10,8 @@ TST_SRC = $(wildcard test/*.d)
 TST_SRC += $(SRC)
 TST_SRC += $(SRC_I)
 TST_TARGET = bin/test
+TST_KERNEL_DIR = test/kernels
+TST_KERNELS = $(wildcard $(TST_KERNEL_DIR)/*.clc)
 OBJ = $(addprefix build/,$(addsuffix .o,$(basename $(SRC))))
 OBJ += $(addprefix build/,$(addsuffix .o,$(basename $(SRC_I))))
 TST_OBJ = $(addprefix test_build/,$(addsuffix .o,$(basename $(TST_SRC))))
@@ -28,9 +30,8 @@ clean:
 docs: $(DOCS)
 
 test: $(TST_TARGET)
-	@./$(TST_TARGET)
-$(TST_TARGET): $(TST_SRC)
-	$(DC) -unittest $(DCFLAGS) $^ -of$(TST_TARGET) -L-lOpenCL
+$(TST_TARGET): $(TST_SRC) $(TST_KERNELS)
+	$(DC) -J$(TST_KERNEL_DIR) -unittest $(DCFLAGS) $(TST_SRC) -of$(TST_TARGET) -L-lOpenCL
 $(TARGET): $(SRC)
 	$(DC) -lib $(DCFLAGS) -of$@ $(SRC)
 #	$(DC) -lib $^ -of$@

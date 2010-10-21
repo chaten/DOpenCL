@@ -487,7 +487,7 @@ extern(System) {
 							cl_uint,
 							cl_device_id * ,
 							size_t * ,
-							const(char) ** ,
+							const(ubyte) ** ,
 							cl_int * ,
 							cl_int * );///
 	cl_int clRetainProgram(cl_program );///

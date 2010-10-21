@@ -5,7 +5,9 @@ import opencl.types;
 import opencl.conv;
 import opencl.cl_object;
 import opencl.api;
+import std.traits;
 import opencl._error_handling;
+import std.string:toStringz;
 class Context:CLObject!(cl_context,ContextInfo) {
 	this(cl_context context) {
 		super(context);
@@ -23,5 +25,21 @@ class Context:CLObject!(cl_context,ContextInfo) {
 	}
 	override cl_int get_info(ContextInfo c,size_t size,void * ptr,size_t * size_ret) {
 		return clGetContextInfo(to!cl_context(this),c,size,ptr,size_ret);
+	}
+	Program createProgramWithSource(string[] strings) {
+		return new Program(this,strings);
+	}
+	Program createProgramWithBinary(const (ubyte)[][] binaries,DeviceID [] devices,out opencl.types.Error [] status) {
+		return new Program(this,binaries,devices,status);
+	}
+	CommandQueue createCommandQueue(DeviceID id,CommandQueueProperties p = CommandQueueProperties(0)) {
+		return new CommandQueue(this,id,p);
+	}
+	Buffer createBuffer(T)(MemFlags flags,T size) if(isIntegral!(T)) {
+		return new Buffer(this,flags,size,null);
+	}
+	Buffer createBuffer(T)(MemFlags flags,T array)if(isArray!(T)) {
+		alias arrayTarget!T Target;
+		return new Buffer(this,flags,Target.sizeof * array.length,array.ptr);
 	}
 }
