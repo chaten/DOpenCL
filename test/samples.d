@@ -97,7 +97,7 @@ unittest {
 		Buffer input = ctx.createBuffer(MemFlags.READ_WRITE,buffer_size);
 		Buffer partials = ctx.createBuffer(MemFlags.READ_WRITE,buffer_size);
 		Buffer output = ctx.createBuffer(MemFlags.READ_WRITE,buffer_size);
-		Event write = queue.enqueueWriteBuffer(input,false,0,buffer_size,input_data.ptr);
+		Event write = queue.enqueueWriteBuffer(input,false,0,input_data);
 		size_t [] group_counts;
 		size_t [] work_item_counts;
 		uint [] operation_counts;
@@ -155,7 +155,7 @@ unittest {
 		ulong ms = times[0];
 		double sec = ms / 1000.0;
 		writefln("Exec Time: %.2f ms", ms/cast(double)(iterations));
-		writefln("Throughput: %.2f GB/sec",1e-9* buffer_size*Type.sizeof * iterations / sec);
+		writefln("Throughput: %.2f GB/sec",1e-9* buffer_size * iterations / sec);
 		//TODO: Verify
 	}
 	void create_reduction_pass_counts(int count,int max_group_size,int max_groups,int max_work_items,ref int pass_count,ref size_t [] group_counts,ref size_t []work_item_counts,ref uint[] operation_counts,ref uint[] entry_counts) {
