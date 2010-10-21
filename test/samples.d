@@ -62,6 +62,37 @@ unittest {
 template arrayTarget(T:T[]) {
 	alias T arrayTarget;
 }
+T calculate_result(T)(T[] data) if(!isArray!T){
+	T sum = data[0];
+	T c = cast(T)0.0f;
+	for(int i = 1;i<data.length;i++) {
+		T y = data[i] - c;
+		T t = sum - y;
+		c = t - sum - y;
+		sum = t;
+	}
+	return sum;
+}
+T calculate_result(T)(T[] data) if(isArray!T) {
+	T sum = data[0];
+	T c;
+	foreach(ref _c;c) {
+		_c = cast(arrayTarget!T)0.0f;
+	}
+	for(int i = 1;i<data.length;i++) {
+		T y;
+		foreach(j,datum;data[i]) {
+			y[j] = datum - c[j];
+		}
+		T t;
+		foreach(j,s;sum) {
+			t[j] = s + y[j];
+		}
+		c = t.dup[] - sum.dup[] - y.dup[];
+		sum = t.dup;
+	}
+	return sum;
+}
 unittest {
 	const uint count = 1024^^2;
 	const uint iterations = 100;
@@ -156,6 +187,10 @@ unittest {
 		double sec = ms / 1000.0;
 		writefln("Exec Time: %.2f ms", ms/cast(double)(iterations));
 		writefln("Throughput: %.2f GB/sec",1e-9* buffer_size * iterations / sec);
+		Type computed_result;
+		queue.enqueueReadBuffer(pass_output,true,0,computed_result);
+		writefln("Computed: %s",computed_result);
+		writefln("Actual Result is: %s",calculate_result(input_data));
 		//TODO: Verify
 	}
 	void create_reduction_pass_counts(int count,int max_group_size,int max_groups,int max_work_items,ref int pass_count,ref size_t [] group_counts,ref size_t []work_item_counts,ref uint[] operation_counts,ref uint[] entry_counts) {
