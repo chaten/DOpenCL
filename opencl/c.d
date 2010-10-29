@@ -19,6 +19,7 @@ import std.stdio;
 import std.traits;
 import std.conv;
 import std.string;
+import core.memory;
 private string[] function_names = ["clGetPlatformIDs","clGetPlatformInfo","clGetDeviceIDs"];
 //Load the files from OpenCL.dll
 version(Windows) {
@@ -55,12 +56,19 @@ static this() {
 	}
 }
 static ~this() {
+	GC.collect();
 	if(openCL !is null) {
+		foreach(func;__traits(allMembers,opencl.c)) {
+			static if(indexOf(func,"cl")==0 && func[2] != '_') {
+				mixin(func ~ "= null;");
+			}
+		}
 		version(Windows) {
 			Runtime.unloadLibrary(openCL);
 		} else version(Posix) {
 			dlclose(openCL);
 		}
+		writeln("OpenCL Shared Library Unloaded");
 	}
 }
 
