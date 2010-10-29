@@ -58,6 +58,13 @@ class Program :CLObject!(cl_program,ProgramInfo){
 	Kernel createKernel(string kernel_name) {
 		return new Kernel(this,kernel_name);
 	}
+	Kernel[] createAllKernels() {
+		cl_uint num_kernels;
+		handle_error(clCreateKernelsInProgram(to!cl_program(this),0,null,&num_kernels));
+		cl_kernel[] kernels = new cl_kernel[num_kernels];
+		handle_error(clCreateKernelsInProgram(to!cl_program(this),num_kernels,kernels.ptr,null));
+		return to!(Kernel[])(kernels);
+	}
 
 	void build(string options = "") {
 		build(DEVICES(),options);
