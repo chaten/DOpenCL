@@ -23,6 +23,10 @@ template to(T) {
 		}
 	}
 }
+import opencl.image_format;
+T toImpl(T,S:ImageFormat)(S source) {
+	return cast(T)source;
+}
 T toImpl(T,S)(S source) if(is(S == struct) && isIntegral!T && S.sizeof == T.sizeof) {
 	return cast(T)source;
 }
