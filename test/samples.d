@@ -144,7 +144,7 @@ unittest {
 			try {
 				p.build("-D GROUP_SIZE="~to!string(group_counts[i])~" -D OPERATIONS="~to!string(operation_counts[i]));
 			}catch(Exception) {
-				writeln("Error building program: "~p.LOG());
+				writeln("Error building program: "~p.log(device));
 				assert(false);
 			}
 			kernels[i] = p.createKernel("reduce_"~type);
