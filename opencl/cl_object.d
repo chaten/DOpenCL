@@ -4,6 +4,7 @@ import opencl._auto_impl;
 import opencl.api;
 import std.string;
 import std.traits;
+import std.stdarg;
 import opencl._error_handling;
 class CLObject(CLType,InfoTypes...) if(InfoTypes.length >= 1){
 	alias _cl_id this;
@@ -17,12 +18,13 @@ class CLObject(CLType,InfoTypes...) if(InfoTypes.length >= 1){
 	~this(){ 
 		handle_error(release());
 	}
+	/*
 	auto opDispatch(string d)() if(hasMember!(typeof(this),toupper(d))) {
 		string create_str(){ 
 			return toupper(d) ~ "()";
 		}
 		return mixin(create_str());
-	}
+	}*/
 	protected abstract cl_int release();
 	private final static string create_abstract_get_infos() {
 		string ret;

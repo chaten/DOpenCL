@@ -8,6 +8,7 @@ import opencl.kernel;
 import opencl.device_id;
 import opencl._error_handling;
 import opencl._auto_impl;
+import std.traits;
 import std.string;
 class Program :CLObject!(cl_program,ProgramInfo){
 	this(cl_program program) {
@@ -45,23 +46,30 @@ class Program :CLObject!(cl_program,ProgramInfo){
 	override cl_int get_info(ProgramInfo e,size_t size,void * ptr,size_t * size_ret) {
 		return clGetProgramInfo(to!(cl_program)(this),e,size,ptr,size_ret);
 	}
-	private cl_int build_info(ProgramBuildInfo e,size_t size,void * ptr,size_t * size_ret) {
+	private cl_int build_info(DeviceID d,ProgramBuildInfo e,size_t size,void * ptr,size_t * size_ret) {
 		//TODO: Fix,Currently only does the first device that this program is built for
 		//TODO: Need to add a parameter to ExpandGetInfoFunction to allow for an extra parameter
-		//TODO: Inorder to input the device.
+		//TODO: In order to input the device.
 		return clGetProgramBuildInfo(to!(cl_program)(this),to!(cl_device_id)(DEVICES()[0]),e,size,ptr,size_ret);
 	}
 	override cl_int release() { 
 		return clReleaseProgram(to!(cl_program)(this));
 	}
-	mixin(ExpandGetInfoFunction!("build_info",ProgramBuildInfo));
 	Kernel createKernel(string kernel_name) {
 		return new Kernel(this,kernel_name);
 	}
+
 	void build(string options = "") {
 		build(DEVICES(),options);
 	}
 	void build(DeviceID[] devices,string options = "") {
 		handle_error(clBuildProgram(to!cl_program(this),devices.length,to!(cl_device_id[])(devices).ptr,toStringz(options),null,null));
 	}
+/*	auto opDispatch(string d)(DeviceID device)if(hasMember!(typeof(this),toupper(d))&&!hasMember!(typeof(super),toupper(d))){
+		string create_str() {
+			return toupper(d) ~ "(device)";
+		}
+		return mixin(create_str());
+	}
+*/	mixin(ExpandGetInfoFunction!("build_info",ProgramBuildInfo,DeviceID));
 }
