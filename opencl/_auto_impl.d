@@ -56,6 +56,9 @@ template arrayTarget(T:T[]) {
 		handle_error(info(e,value_size,value.ptr,null));
 		return cast(immutable)value[0..value.length-1];
 	}
+	bool _get_info(A:bool,E)(E e,cl_int delegate(E,size_t,void *,size_t *) info) {
+		return cast(bool)_get_info!(cl_bool,E)(e,info);
+	}
 template ExpandGetInfoFunction(string func,T,R...) if(is(T == enum)){
 	string ExpandGetInfoFunction(R r) {
 		string func_name = func;
