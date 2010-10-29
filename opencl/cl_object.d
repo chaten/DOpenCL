@@ -4,6 +4,7 @@ import opencl._auto_impl;
 import opencl.api;
 import std.string;
 import std.traits;
+import opencl._error_handling;
 class CLObject(CLType,InfoTypes...) if(InfoTypes.length >= 1){
 	alias _cl_id this;
 	CLType _cl_id;
@@ -14,7 +15,7 @@ class CLObject(CLType,InfoTypes...) if(InfoTypes.length >= 1){
 		_cl_id = cl_id;
 	}
 	~this(){ 
-		release();
+		handle_error(release());
 	}
 	auto opDispatch(string d)() if(hasMember!(typeof(this),toupper(d))) {
 		string create_str(){ 
