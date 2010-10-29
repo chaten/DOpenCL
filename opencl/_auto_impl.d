@@ -88,8 +88,13 @@ template ExpandGetInfoFunction(string func,T,R = void) if(is(T == enum)){
 				arg = "val";
 				arg_list = R.stringof ~ " "~arg;
 			}
+			//TODO: opDispatch for super that doesn't depend on args
 			return "import std.string;
 				import std.traits;
+				auto opDispatch(string func)() if(hasMember!(typeof(super),toupper(func))) {
+					string create_str() { return toupper(func) ~ \"()\";}
+					return mixin(create_str());
+				}
 				auto opDispatch(string func)("~arg_list~") 
 				if(hasMember!(typeof(this),toupper(func)) && !hasMember!(typeof(super),toupper(func))) {
 					string create_str() { return toupper(func) ~ \"("~arg~")\";}
