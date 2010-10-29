@@ -11,14 +11,14 @@ unittest {
 	scope(success) { writeln("Sample 1 Successful");}
 	scope(failure) { writeln("Sample 1 Failed");}
 	string kernel = import("sample1.clc");
-	PlatformID [] ids = PlatformID.all();
-	Context c = new Context(ids[0],ids[0].devices());
-	CommandQueue queue = c.createCommandQueue(c.devices()[0]);
-	Program p = c.createProgramWithSource([kernel]);
+	scope PlatformID [] ids = PlatformID.all();
+	scope Context c = new Context(ids[0],ids[0].devices());
+	scope CommandQueue queue = c.createCommandQueue(c.devices()[0]);
+	scope Program p = c.createProgramWithSource([kernel]);
 	p.build();
 	char [] buffer = new char["Hello World\n".length];
-	Buffer b = c.createBuffer(MemFlags.WRITE_ONLY | MemFlags.USE_HOST_PTR,buffer);
-	Kernel k = p.createKernel("hello");
+	scope Buffer b = c.createBuffer(MemFlags.WRITE_ONLY | MemFlags.USE_HOST_PTR,buffer);
+	scope Kernel k = p.createKernel("hello");
 	k.setArg(0,b);
 	queue.enqueueNDRangeKernel(k,[buffer.length]);
 	queue.finish();
@@ -31,9 +31,9 @@ unittest {
 	scope(success) { writeln("Sample 2 Successful");}
 	scope(failure) { writeln("Sample 2 Failed");}
 	string src = import("sample2.clc");
-	PlatformID [] ids = PlatformID.all();
-	Context ctx = new Context(ids[0],ids[0].devices());
-        CommandQueue queue = ctx.createCommandQueue(ctx.devices()[0]);
+	scope PlatformID [] ids = PlatformID.all();
+	scope Context ctx = new Context(ids[0],ids[0].devices());
+        scope CommandQueue queue = ctx.createCommandQueue(ctx.devices()[0]);
 	Program p = ctx.createProgramWithSource([src]);
 	p.build();
 	float[] data = new float[DATA_SIZE];
