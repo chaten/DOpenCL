@@ -75,12 +75,12 @@ class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,out T value,Event[] wait_list = null) if(!isArray!T && !isPointer!T) {
 		return enqueueReadBuffer(b,blocking_read,offset,T.sizeof,&value,wait_list);
 	}
-	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,size_t size,T ptr,Event[] wait_list = null)if(isPointer!T) {
+	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,size_t size,const T ptr,Event[] wait_list = null)if(isPointer!T) {
 		cl_event event_ret;
 		handle_error(clEnqueueWriteBuffer(to!cl_command_queue(this),to!cl_mem(b),blocking_write,offset,size,ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
 	}
-	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,T array,Event[] wait_list= null) if(isArray!T) {
+	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,const T array,Event[] wait_list= null) if(isArray!T) {
 		alias arrayTarget!T Target;
 		return enqueueWriteBuffer(b,blocking_write,offset,array.length*Target.sizeof,array.ptr,wait_list);
 	}
