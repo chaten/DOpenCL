@@ -1,6 +1,6 @@
 module opencl.image_format;
 import opencl.c;
-public import opencl.types:ChannelOrder,ChannelType;
+import opencl.types;
 import opencl.conv;
 
 struct ImageFormat {
