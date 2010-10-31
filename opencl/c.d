@@ -60,7 +60,7 @@ static ~this() {
 	if(openCL !is null) {
 		foreach(func;__traits(allMembers,opencl.c)) {
 			static if(indexOf(func,"cl")==0 && func[2] != '_') {
-				mixin(func ~ "= null;");
+				mixin(func ~ "= function ReturnType!"~func~"(ParameterTypeTuple!"~func~") {throw new Exception(\"OpenCL Shared Library Unloaded\");};");
 			}
 		}
 		version(Windows) {
