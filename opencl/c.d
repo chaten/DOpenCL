@@ -535,22 +535,22 @@ enum : cl_int {
        cl_int function (cl_event,       cl_profiling_info ,       size_t,       void *,       size_t *) clGetEventProfilingInfo;/// 
        cl_int function (cl_command_queue ) clFlush;///
        cl_int function (cl_command_queue ) clFinish;/// 
-       cl_int function (cl_command_queue,       cl_mem,       cl_bool ,       size_t,       size_t,       void *,       cl_uint ,       cl_event *,       cl_event *) clEnqueueReadBuffer;///
-       cl_int function(cl_command_queue ,       cl_mem ,       cl_bool,       size_t ,       size_t ,       const(void) * ,       cl_uint,       cl_event * ,       cl_event * ) clEnqueueWriteBuffer;///
-       cl_int function(cl_command_queue,       cl_mem,       cl_mem,       size_t,       size_t,       size_t,       cl_uint ,       cl_event *,       cl_event *) clEnqueueCopyBuffer;///
-       cl_int function(cl_command_queue ,       cl_mem ,       cl_bool,       size_t * ,       size_t * ,       size_t ,       size_t ,       void * ,       cl_uint,       cl_event * ,       cl_event * ) clEnqueueReadImage;///
-       cl_int function(cl_command_queue,       cl_mem,       cl_bool ,       size_t *,       size_t *,       size_t,       size_t,       const(void) *,       cl_uint ,       cl_event *,       cl_event *) clEnqueueWriteImage;///
-       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t * ,       size_t * ,       size_t * ,       cl_uint,       cl_event * ,       cl_event * ) clEnqueueCopyImage;///
-       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t * ,       size_t * ,       size_t ,       cl_uint,       cl_event * ,       cl_event * ) clEnqueueCopyImageToBuffer;/// 
-       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t ,       size_t * ,       size_t * ,       cl_uint,       cl_event * ,       cl_event * ) clEnqueueCopyBufferToImage;///
-       void * function(cl_command_queue ,       cl_mem ,       cl_bool,       cl_map_flags ,       size_t ,       size_t ,       cl_uint,       cl_event * ,       cl_event * ,       cl_int * ) clEnqueueMapBuffer;///
-       void * function(cl_command_queue,       cl_mem,       cl_bool ,       cl_map_flags,       size_t *,       size_t *,       size_t *,       size_t *,       cl_uint ,       cl_event *,       cl_event *,       cl_int *) clEnqueueMapImage;///
+       cl_int function (cl_command_queue,       cl_mem,       cl_bool ,       size_t,       size_t,       void *,       cl_uint , const(cl_event) *,       cl_event *) clEnqueueReadBuffer;///
+       cl_int function(cl_command_queue ,       cl_mem ,       cl_bool,       size_t ,       size_t ,       const(void) * ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueWriteBuffer;///
+       cl_int function(cl_command_queue,       cl_mem,       cl_mem,       size_t,       size_t,       size_t,       cl_uint ,      const(cl_event) *,       cl_event *) clEnqueueCopyBuffer;///
+       cl_int function(cl_command_queue ,       cl_mem ,       cl_bool,       const(size_t) * ,       const(size_t) * ,       size_t ,       size_t ,       void * ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueReadImage;///
+       cl_int function(cl_command_queue,       cl_mem,       cl_bool ,       const(size_t) *,       const(size_t) *,       size_t,       size_t,       const(void) *,       cl_uint ,       const(cl_event) *,       cl_event *) clEnqueueWriteImage;///
+       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t * ,       size_t * ,       size_t * ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueCopyImage;///
+       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t * ,       size_t * ,       size_t ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueCopyImageToBuffer;/// 
+       cl_int function(cl_command_queue ,       cl_mem ,       cl_mem ,       size_t ,       size_t * ,       size_t * ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueCopyBufferToImage;///
+       void * function(cl_command_queue ,       cl_mem ,       cl_bool,       cl_map_flags ,       size_t ,       size_t ,       cl_uint,       const(cl_event) * ,       cl_event * ,       cl_int * ) clEnqueueMapBuffer;///
+       void * function(cl_command_queue,       cl_mem,       cl_bool ,       cl_map_flags,       size_t *,       size_t *,       size_t *,       size_t *,       cl_uint ,       const(cl_event) *,       cl_event *,       cl_int *) clEnqueueMapImage;///
        cl_int function(cl_command_queue ,       cl_mem ,       void * ,       cl_uint,       cl_event *,       cl_event *) clEnqueueUnmapMemObject;///
        cl_int function(cl_command_queue ,       cl_kernel,       cl_uint,       const(size_t) * ,       const(size_t) * ,       const(size_t) * ,       cl_uint,       const(cl_event) * ,       cl_event * ) clEnqueueNDRangeKernel;///
        cl_int function(cl_command_queue,       cl_kernel ,       cl_uint ,       cl_event *,       cl_event *) clEnqueueTask;/// 
-       cl_int function(cl_command_queue,       void function(void *),       void * ,       size_t,       cl_uint ,       cl_mem * ,       void ** ,       cl_uint ,       cl_event * ,       cl_event * ) clEnqueueNativeKernel;///
+       cl_int function(cl_command_queue,       void function(void *),       void * ,       size_t,       cl_uint ,       cl_mem * ,       void ** ,       cl_uint ,       const(cl_event) * ,       cl_event * ) clEnqueueNativeKernel;///
        cl_int function(cl_command_queue,       cl_event *) clEnqueueMarker;///
-       cl_int function(cl_command_queue ,       cl_uint,       cl_event * ) clEnqueueWaitForEvents;///
+       cl_int function(cl_command_queue ,       cl_uint,       const(cl_event) * ) clEnqueueWaitForEvents;///
        cl_int function (cl_command_queue ) clEnqueueBarrier;///
        void * function ( char * ) clGetExtensionFunctionAddress;///
 }

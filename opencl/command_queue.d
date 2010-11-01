@@ -1,5 +1,5 @@
 module opencl.command_queue;
-
+import opencl.image2d;
 import opencl.c;
 import opencl.cl_object;
 import opencl.types;
@@ -68,11 +68,11 @@ class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 		handle_error(clEnqueueReadBuffer(to!cl_command_queue(this),to!cl_mem(b),blocking_read,offset,size,ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
 	}
-	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,ref T array,Event[] wait_list = null) if(isArray!T){
+	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,T array,Event[] wait_list = null) if(isArray!T){
 		alias arrayTarget!T Target;
-		return enqueueReadBuffer(b,blocking_read,offset,array.length*Target.sizeof,array.ptr,wait_list);
+		return enqueueReadBuffer!(Target *)(b,blocking_read,offset,array.length*Target.sizeof,array.ptr,wait_list);
 	}
-	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,out T value,Event[] wait_list = null) if(!isArray!T && !isPointer!T) {
+	Event enqueueReadBuffer(T)(Buffer b,bool blocking_read,size_t offset,out T value, Event[] wait_list = null) if(!isArray!T && !isPointer!T) {
 		return enqueueReadBuffer(b,blocking_read,offset,T.sizeof,&value,wait_list);
 	}
 	Event enqueueWriteBuffer(T)(Buffer b,bool blocking_write,size_t offset,size_t size,const T ptr,Event[] wait_list = null)if(isPointer!T) {
@@ -94,6 +94,20 @@ class CommandQueue : CLObject!(cl_command_queue,CommandQueueInfo){
 		cl_event event_ret;
 		ptr = clEnqueueMapBuffer(to!cl_command_queue(this),to!cl_mem(b),blocking,to!cl_map_flags(flags),offset,cb,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret,&err_code);
 		handle_error(err_code);
+		return to!Event(event_ret);
+	}
+	Event enqueueWriteImage2D(T)(Image2D i,bool blocking,const size_t origin[2],const size_t region[2],const T[] array,size_t row_pitch = 0,Event[] wait_list = null) if(isArray!T) {
+		cl_event event_ret;
+		const size_t [3] _origin = [origin[0],origin[1],0];
+		const size_t [3] _region = [region[0],region[1],1];
+		handle_error(clEnqueueWriteImage(to!cl_command_queue(this),to!cl_mem(i),blocking,_origin.ptr,_region.ptr,row_pitch,0,array.ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
+		return to!Event(event_ret);
+	}
+	Event enqueueReadImage2D(T)(Image2D i,bool blocking,const size_t origin[2],const size_t region[2],T[] array,size_t row_pitch = 0,Event[] wait_list = null) if(isArray!T) {
+		cl_event event_ret;
+		const size_t [3] _origin = [origin[0],origin[1],0];
+		const size_t [3] _region = [region[0],region[1],1];
+		handle_error(clEnqueueReadImage(to!cl_command_queue(this),to!cl_mem(i),blocking,_origin.ptr,_region.ptr,row_pitch,0,array.ptr,wait_list.length,(to!(cl_event[])(wait_list)).ptr,&event_ret));
 		return to!Event(event_ret);
 	}
 	//TODO enqueue{Map,Copy,Read,Write}Image
